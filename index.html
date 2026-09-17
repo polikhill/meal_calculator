@@ -150,11 +150,13 @@ input[type=range]{width:100%;padding:0;margin:8px 0 2px;background:transparent;b
 .cres .ctd{font-family:var(--display);font-size:17px;font-weight:600;padding-top:8px}
 .gnote{font-size:12.5px;color:var(--muted);margin:8px 0 0}
 .gnote.o{color:var(--over)}
-.datebar{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;align-items:center;margin-bottom:12px}
+.datebar{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:8px;align-items:end;margin-bottom:12px}
 .datebar .nav{font:inherit;font-size:22px;line-height:1;border:var(--btnb);background:var(--card);color:var(--accent);border-radius:var(--rs);padding:8px 0;cursor:pointer;box-shadow:var(--shadow-sm)}
-.datebar .dl{display:flex;flex-direction:column;gap:3px}
+.datebar .dl{display:flex;flex-direction:column;gap:3px;min-width:0}
 .datebar .dt{font-family:var(--display);font-weight:600;font-size:15px;text-align:center}
-.datebar input{text-align:center;padding:6px}
+.datebar input{text-align:center;padding:6px;width:100%;max-width:100%;min-width:0;display:block;-webkit-appearance:none;appearance:none;box-sizing:border-box;height:42px}
+.datebar input::-webkit-date-and-time-value{text-align:center;height:100%;line-height:28px}
+.datebar .nav{height:42px;padding:0;display:flex;align-items:center;justify-content:center}
 .daylist{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 .dayrow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border:var(--btnb);border-radius:var(--rm);background:var(--field);padding:10px 12px;cursor:pointer;font:inherit;color:var(--ink);text-align:left;box-shadow:var(--shadow-sm)}
 .dayrow.cur{border-color:var(--accent)}
