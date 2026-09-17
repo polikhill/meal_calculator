@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbf4f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#140910" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Раціон">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Раціон · Carrie edition</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🍸%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%2317090f'/%3E%3Ctext x='90' y='125' font-size='100' text-anchor='middle'%3E🍸%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#fbf4f6;--card:#ffffff;--ink:#17090f;--muted:#6f5a63;--line:#e6d4db;--field:#fff8fa;
+  --accent:#d6006f;--accent-soft:#fbe4ee;--on-accent:#ffffff;
+  --k:#d6006f;--p:#b8902e;--f:#6b2d5c;--c:#17090f;--over:#b3261e;
+  --display:'Playfair Display',Georgia,'Times New Roman',serif;--body:'Jost','Helvetica Neue',Arial,sans-serif;
+  --rs:4px;--rm:6px;--rl:8px;
+  --cardb:1px solid var(--ink);--btnb:1px solid var(--ink);--fieldb:1px solid var(--line);
+  --rule:1px solid var(--ink);--rowrule:1px solid var(--line);
+  --shadow:none;--shadow-sm:none;--trackh:5px;
+  --h1s:30px;--h1w:700;--h1ls:0;--h2s:20px;--h2w:700;
+  --labtt:uppercase;--lables:.12em;--btntt:uppercase;--btnls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#140910;--card:#1e1118;--ink:#f6e9ef;--muted:#b394a3;--line:#3a2530;--field:#251620;
+    --accent:#ff4fa3;--accent-soft:#3a1128;--on-accent:#140910;
+    --k:#ff4fa3;--p:#e2c065;--f:#c77ab0;--c:#f6e9ef;--over:#ff8a80;
+    --cardb:1px solid #4a3040;--btnb:1px solid #4a3040;--rule:1px solid #4a3040;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#140910;--card:#1e1118;--ink:#f6e9ef;--muted:#b394a3;--line:#3a2530;--field:#251620;
+  --accent:#ff4fa3;--accent-soft:#3a1128;--on-accent:#140910;
+  --k:#ff4fa3;--p:#e2c065;--f:#c77ab0;--c:#f6e9ef;--over:#ff8a80;
+  --cardb:1px solid #4a3040;--btnb:1px solid #4a3040;--rule:1px solid #4a3040;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:18px 14px 60px}
+h1{font-family:var(--display);font-size:var(--h1s,24px);font-weight:var(--h1w,700);margin:0;letter-spacing:var(--h1ls,-.01em);line-height:1.15;text-transform:var(--h1tt,none)}
+.sub{color:var(--muted);margin:4px 0 0;font-size:13px}
+.summary{position:sticky;top:0;z-index:5;background:var(--bg);margin:10px -14px 14px;padding:10px 14px 12px;border-bottom:var(--rule)}
+.bars{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.bar .bl{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:13px}
+.bar .bl b{font-weight:600;text-transform:var(--labtt,none);letter-spacing:var(--lables,0)}
+.bar .bl span{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}
+.track{height:var(--trackh,8px);border-radius:99px;background:var(--line);overflow:hidden;margin:4px 0 3px;border:var(--trackb,0)}
+.fill{height:100%;border-radius:99px;transition:width .25s}
+.rem{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rem.o{color:var(--over);font-weight:600}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
+.tab{border:var(--btnb);background:var(--card);color:var(--ink);border-radius:var(--rs);padding:8px 2px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);text-transform:var(--labtt,none);letter-spacing:var(--lables,0)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.card{background:var(--card);border:var(--cardb);border-radius:var(--rl);padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.meal header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:4px}
+h2{font-family:var(--display);font-size:var(--h2s,18px);margin:0;font-weight:var(--h2w,700);text-transform:var(--h2tt,none);letter-spacing:var(--h2ls,0)}
+h3{font-family:var(--display);font-size:16px;margin:0 0 6px;font-weight:var(--h2w,700)}
+.hint{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.mt{text-align:right;font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.mt b{display:block;font-family:var(--display);font-size:17px;font-weight:600;color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 88px 34px;gap:6px;align-items:center;padding:9px 0 7px;border-top:var(--rowrule)}
+select,input,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:var(--fieldb);border-radius:var(--rs);padding:8px;min-width:0;width:100%}
+textarea{font-size:13px;min-height:90px;resize:vertical}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.custom-name{font-weight:600}
+.custom-name small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.g{display:flex;align-items:center;gap:4px}
+.g input{text-align:right;padding-right:6px}
+.g span{color:var(--muted);font-size:13px}
+.x{border:0;background:transparent;color:var(--muted);font-size:24px;line-height:1;padding:4px;cursor:pointer;border-radius:8px}
+.x.sm{font-size:18px;padding:0 4px;vertical-align:middle}
+.rm{grid-column:1/-1;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rm b{color:var(--ink);font-weight:600;margin-right:4px}
+.m{white-space:nowrap;margin-right:8px}
+.m i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:1px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.btn{font:inherit;font-size:14px;font-weight:700;border:var(--btnb);background:var(--accent-soft);color:var(--accent);border-radius:var(--rs);padding:8px 12px;cursor:pointer;box-shadow:var(--shadow-sm);text-transform:var(--btntt,none);letter-spacing:var(--btnls,0)}
+.btn.solid{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--muted);box-shadow:none}
+.btn.wide{width:100%;margin-top:10px}
+.tpl{width:auto;flex:1;min-width:150px;font-size:14px}
+.empty{color:var(--muted);font-size:13px;margin:8px 0 2px}
+.drinksel{min-width:120px}
+.drink{margin-top:12px;padding:12px;border-radius:var(--rm);background:var(--accent-soft)}
+.dh{font-weight:700;font-size:14px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:8px 0}
+.seg button{font:inherit;font-size:13px;font-weight:700;padding:7px 4px;border-radius:var(--rs);border:var(--btnb);background:var(--card);color:var(--ink);cursor:pointer}
+.seg button.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.help p,.help li{font-size:14.5px;max-width:68ch}
+.help p{margin:6px 0}
+.help ol{padding-left:20px;margin:6px 0}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+th{color:var(--muted);font-weight:600}
+tr.grp td{font-weight:700;color:var(--accent);padding-top:14px}
+.potin{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.potin label{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.out{margin-top:12px;padding:12px;border-radius:var(--rm);background:var(--accent-soft);font-variant-numeric:tabular-nums;font-size:14px}
+.out .big{font-family:var(--display);font-size:18px;font-weight:600;margin-top:10px}
+.warn{color:var(--over);font-weight:600;margin:8px 0 0}
+.goal{margin-top:10px;border:var(--cardb);border-radius:var(--rm);background:var(--card);box-shadow:var(--shadow-sm)}
+.goal summary{cursor:pointer;padding:10px 12px;font-weight:700;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.goal summary::-webkit-details-marker{display:none}
+.goal summary::after{content:'＋';color:var(--accent);font-weight:700}
+.goal[open] summary::after{content:'−'}
+.goal .gbody{padding:0 12px 12px}
+.goal .potin{margin-top:0}
+.calc{margin-top:12px;border-top:1px solid var(--line);padding-top:6px}
+.calc summary{cursor:pointer;padding:6px 0;font-weight:700;font-size:14px;list-style:none;color:var(--accent)}
+.calc summary::-webkit-details-marker{display:none}
+.calc summary::before{content:'＋ ';}
+.calc[open] summary::before{content:'− ';}
+.calc .gbody{padding:6px 0 4px}
+.qbtn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:var(--btnb);background:var(--card);color:var(--accent);font:inherit;font-size:13px;font-weight:700;cursor:pointer;margin-left:8px;vertical-align:middle;padding:0}
+.qbtn.on{background:var(--accent);color:var(--on-accent)}
+.calchelp{display:none;margin:8px 0 4px;padding:10px 12px;border-radius:var(--rm);background:var(--accent-soft);font-size:13.5px}
+.calchelp.on{display:block}
+.calchelp p{margin:6px 0}
+.seg small{display:block;font-weight:400;font-size:11px;opacity:.85}
+.sl{margin-top:12px}
+.slh{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;gap:8px}
+.slh span{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;padding:0;margin:8px 0 2px;background:transparent;border:0;accent-color:var(--accent);height:28px}
+.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);line-height:1.2;text-align:center}
+.scale span:first-child{text-align:left}.scale span:last-child{text-align:right}
+.scale small{font-size:10px}
+.cres{margin-top:10px;font-variant-numeric:tabular-nums;font-size:14px}
+.cres .cl{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-top:1px dashed var(--line)}
+.cres .cl span:last-child{white-space:nowrap}
+.cres .cavg{font-weight:700}
+.cres .ctd{font-family:var(--display);font-size:17px;font-weight:600;padding-top:8px}
+.gnote{font-size:12.5px;color:var(--muted);margin:8px 0 0}
+.gnote.o{color:var(--over)}
+.datebar{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;align-items:center;margin-bottom:12px}
+.datebar .nav{font:inherit;font-size:22px;line-height:1;border:var(--btnb);background:var(--card);color:var(--accent);border-radius:var(--rs);padding:8px 0;cursor:pointer;box-shadow:var(--shadow-sm)}
+.datebar .dl{display:flex;flex-direction:column;gap:3px}
+.datebar .dt{font-family:var(--display);font-weight:600;font-size:15px;text-align:center}
+.datebar input{text-align:center;padding:6px}
+.daylist{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.dayrow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border:var(--btnb);border-radius:var(--rm);background:var(--field);padding:10px 12px;cursor:pointer;font:inherit;color:var(--ink);text-align:left;box-shadow:var(--shadow-sm)}
+.dayrow.cur{border-color:var(--accent)}
+.dayrow .dd{font-family:var(--display);font-weight:600;font-size:15px}
+.dayrow .dd small{font-family:var(--body);font-weight:400;color:var(--muted);margin-left:6px;font-size:12px}
+.dayrow .ds{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
+.dayrow .ds b{color:var(--ink)}
+.nogoal{grid-column:1/-1;font-size:13px;font-variant-numeric:tabular-nums}
+.nogoal b{color:var(--ink)}
+.nogoal span{display:block;font-size:12px;color:var(--muted)}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.lang{display:flex;gap:4px;flex-shrink:0;margin-top:4px}
+.lang button{font:inherit;font-size:11px;font-weight:700;letter-spacing:.06em;padding:4px 7px;border:var(--btnb);background:var(--card);color:var(--ink);border-radius:var(--rs);cursor:pointer}
+.lang button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.pick{font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:var(--fieldb);border-radius:var(--rs);padding:8px 10px;width:100%;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:none;align-items:flex-end;justify-content:center}
+.panel{background:var(--card);color:var(--ink);width:100%;max-width:720px;max-height:88vh;border-radius:var(--rl) var(--rl) 0 0;display:flex;flex-direction:column;box-shadow:0 -6px 30px rgba(0,0,0,.25)}
+.ph{display:flex;gap:6px;padding:12px 12px 8px;border-bottom:1px solid var(--line)}
+.ph input{flex:1}
+.plist{overflow:auto;padding:4px 12px 20px;-webkit-overflow-scrolling:touch}
+.pg{font-family:var(--display);font-weight:var(--h2w,700);font-size:14px;color:var(--accent);padding:12px 0 4px}
+.pi{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;font:inherit;font-size:15px;color:var(--ink);background:transparent;border:0;border-top:1px solid var(--line);padding:10px 2px;cursor:pointer;text-align:left}
+.pi small{color:var(--muted);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pi.on{color:var(--accent);font-weight:700}
+.pempty{color:var(--muted);padding:16px 0}
+.foot{font-size:12px;color:var(--muted);text-align:center;margin-top:18px}
+@media (max-width:380px){.bars{gap:8px 12px}.tab{font-size:11px}}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+
+h1{font-style:italic}
+h1::after{content:' 🍸';font-style:normal;font-size:.7em}
+.sub{font-family:var(--display);font-style:italic;font-size:14px}
+h2{font-style:italic}
+.card{position:relative}
+.meal h2::before{content:'— ';color:var(--accent)}
+.tab,.btn{font-size:11.5px}
+.tab.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.btn.solid{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.btn{background:transparent;color:var(--ink)}
+.track{border-radius:0}.fill{border-radius:0}
+.bar .bl b{font-size:11px}
+.mt b{font-style:italic;font-size:19px}
+.dayrow .dd{font-style:italic;font-size:17px}
+.goal summary{text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+.datebar .dt{font-style:italic;font-size:16px}
+table th{text-transform:uppercase;letter-spacing:.08em;font-size:11px}
+tr.grp td{font-family:var(--display);font-style:italic;font-size:15px;color:var(--ink)}
+.foot{font-family:var(--display);font-style:italic}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1 id="h1">Конструктор раціону</h1>
+  <div class="lang" role="group" aria-label="Language"><button data-act="lang" data-l="uk">UA</button><button data-act="lang" data-l="en">EN</button><button data-act="lang" data-l="pt">PT</button></div></div>
+  <p class="sub" id="sub"></p>
+  <details class="goal" id="goal">
+    <summary id="goalsum">Моя ціль</summary>
+    <div class="gbody">
+      <div class="potin">
+        <label id="gl-k">Калорії, ккал<input type="text" inputmode="decimal" data-act="goal" data-k="k" id="gk"></label>
+        <label id="gl-p">Білки, г<input type="text" inputmode="decimal" data-act="goal" data-k="p" id="gp"></label>
+        <label id="gl-f">Жири, г<input type="text" inputmode="decimal" data-act="goal" data-k="f" id="gf"></label>
+        <label id="gl-c">Вуглеводи (залишок)<input type="text" readonly id="gc" tabindex="-1"></label>
+      </div>
+      <p class="gnote" id="gnote"></p>
+      <div class="actions"><button class="btn ghost" data-act="goalreset">Очистити ціль</button></div>
+      <details class="calc" id="calc"><summary id="calcsum">Розрахувати норму калорій</summary>
+        <div class="gbody" id="calcbody"></div>
+      </details>
+    </div>
+  </details>
+  <div class="summary">
+    <div class="bars" id="bars"></div>
+    <div class="tabs">
+      <button class="tab" data-view="day">День</button>
+      <button class="tab" data-view="days">Дні</button>
+      <button class="tab" data-view="pot">Каструля</button>
+      <button class="tab" data-view="prod">Продукти</button>
+      <button class="tab" data-view="help">Поради</button>
+    </div>
+  </div>
+  <main id="view"></main>
+  <p class="foot" id="foot"></p>
+</div>
+<script>
+const STR={"lang_name": {"uk": "Українська", "en": "English", "pt": "Português"}, "title": {"uk": "Конструктор раціону", "en": "Meal constructor", "pt": "Construtor de refeições"}, "kcal": {"uk": "ккал", "en": "kcal", "pt": "kcal"}, "g": {"uk": "г", "en": "g", "pt": "g"}, "P": {"uk": "Б", "en": "P", "pt": "P"}, "F": {"uk": "Ж", "en": "F", "pt": "G"}, "C": {"uk": "В", "en": "C", "pt": "HC"}, "protein": {"uk": "Білки", "en": "Protein", "pt": "Proteínas"}, "fat": {"uk": "Жири", "en": "Fat", "pt": "Gorduras"}, "carbs": {"uk": "Вуглеводи", "en": "Carbs", "pt": "Hidratos"}, "calories": {"uk": "Калорії", "en": "Calories", "pt": "Calorias"}, "goal_set": {"uk": "Задати ціль", "en": "Set a goal", "pt": "Definir objetivo"}, "goal_change": {"uk": "Змінити ціль", "en": "Change goal", "pt": "Alterar objetivo"}, "goal_k": {"uk": "Калорії, ккал", "en": "Calories, kcal", "pt": "Calorias, kcal"}, "goal_p": {"uk": "Білки, г", "en": "Protein, g", "pt": "Proteínas, g"}, "goal_f": {"uk": "Жири, г", "en": "Fat, g", "pt": "Gorduras, g"}, "goal_c": {"uk": "Вуглеводи (залишок)", "en": "Carbs (remainder)", "pt": "Hidratos (restante)"}, "eg": {"uk": "напр.", "en": "e.g.", "pt": "ex."}, "goal_clear": {"uk": "Очистити ціль", "en": "Clear goal", "pt": "Limpar objetivo"}, "goal_none": {"uk": "Ціль ще не задана: введи свої калорії, білки й жири.", "en": "No goal yet: enter your calories, protein and fat.", "pt": "Ainda sem objetivo: introduz as tuas calorias, proteínas e gorduras."}, "goal_none_note": {"uk": "Вуглеводи порахуються самі як залишок: калорії − (білки × 4 + жири × 9).", "en": "Carbs are calculated as the remainder: calories − (protein × 4 + fat × 9).", "pt": "Os hidratos são calculados como o restante: calorias − (proteínas × 4 + gorduras × 9)."}, "goal_line": {"uk": "Ціль на день: {k} ккал, білки {p} г, жири {f} г, вуглеводи {c} г ({ck} ккал)", "en": "Daily goal: {k} kcal, protein {p} g, fat {f} g, carbs {c} g ({ck} kcal)", "pt": "Objetivo diário: {k} kcal, proteínas {p} g, gorduras {f} g, hidratos {c} g ({ck} kcal)"}, "goal_calc": {"uk": "{k} − ({p} × 4 + {f} × 9) = {left} ккал на вуглеводи", "en": "{k} − ({p} × 4 + {f} × 9) = {left} kcal for carbs", "pt": "{k} − ({p} × 4 + {f} × 9) = {left} kcal para hidratos"}, "goal_over": {"uk": "Білки й жири вже дають {n} ккал, це більше за ціль по калоріях. Збільш калорії або зменш білки чи жири.", "en": "Protein and fat already add up to {n} kcal, more than your calorie goal. Raise calories or lower protein or fat.", "pt": "Proteínas e gorduras já somam {n} kcal, mais do que o objetivo de calorias. Aumenta as calorias ou reduz proteínas ou gorduras."}, "tab_day": {"uk": "День", "en": "Day", "pt": "Dia"}, "tab_days": {"uk": "Дні", "en": "Days", "pt": "Dias"}, "tab_pot": {"uk": "Каструля", "en": "Pot", "pt": "Panela"}, "tab_prod": {"uk": "Продукти", "en": "Foods", "pt": "Alimentos"}, "tab_help": {"uk": "Поради", "en": "Tips", "pt": "Dicas"}, "foot": {"uk": "Показники усереднені. Дані зберігаються тільки в цьому браузері, бекап у вкладці «Поради».", "en": "Values are averages. Data is stored only in this browser; backup is under \"Tips\".", "pt": "Valores médios. Os dados ficam apenas neste browser; a cópia de segurança está em «Dicas»."}, "m_breakfast": {"uk": "Сніданок", "en": "Breakfast", "pt": "Pequeno-almoço"}, "m_lunch": {"uk": "Обід", "en": "Lunch", "pt": "Almoço"}, "m_snack": {"uk": "Перекус", "en": "Snack", "pt": "Lanche"}, "m_dinner": {"uk": "Вечеря", "en": "Dinner", "pt": "Jantar"}, "hint_nogoal": {"uk": "Додай продукти або обери шаблон", "en": "Add foods or pick a template", "pt": "Adiciona alimentos ou escolhe um modelo"}, "hint_drink": {"uk": "Орієнтир ≈ {k} ккал разом з напоєм", "en": "Guide ≈ {k} kcal including the drink", "pt": "Referência ≈ {k} kcal com a bebida"}, "hint_meal": {"uk": "Орієнтир ≈ {k} ккал, білки {p}", "en": "Guide ≈ {k} kcal, protein {p}", "pt": "Referência ≈ {k} kcal, proteínas {p}"}, "from": {"uk": "від", "en": "from", "pt": "a partir de"}, "empty_meal": {"uk": "Тут поки порожньо. Додай продукт або обери шаблон.", "en": "Nothing here yet. Add a food or pick a template.", "pt": "Ainda vazio. Adiciona um alimento ou escolhe um modelo."}, "add_food": {"uk": "+ Продукт", "en": "+ Food", "pt": "+ Alimento"}, "pick_tpl": {"uk": "Обрати шаблон", "en": "Pick a template", "pt": "Escolher modelo"}, "clear": {"uk": "Очистити", "en": "Clear", "pt": "Limpar"}, "drink_h": {"uk": "☕ Напій зі 100 мл молока", "en": "☕ Drink with 100 ml of milk", "pt": "☕ Bebida com 100 ml de leite"}, "d_none": {"uk": "Без напою", "en": "No drink", "pt": "Sem bebida"}, "d_cap": {"uk": "Капучино", "en": "Cappuccino", "pt": "Cappuccino"}, "d_matcha": {"uk": "Матча лате", "en": "Matcha latte", "pt": "Matcha latte"}, "milk16": {"uk": "Молоко 1,5–1,8%", "en": "Milk 1.5–1.8%", "pt": "Leite meio-gordo"}, "milk35": {"uk": "Молоко 3,5%", "en": "Milk 3.5%", "pt": "Leite gordo"}, "no_drink_today": {"uk": "Сьогодні без напою", "en": "No drink today", "pt": "Hoje sem bebida"}, "today_": {"uk": "Сьогодні", "en": "Today", "pt": "Hoje"}, "yesterday": {"uk": "Вчора", "en": "Yesterday", "pt": "Ontem"}, "tomorrow": {"uk": "Завтра", "en": "Tomorrow", "pt": "Amanhã"}, "prev_day": {"uk": "Попередній день", "en": "Previous day", "pt": "Dia anterior"}, "next_day": {"uk": "Наступний день", "en": "Next day", "pt": "Dia seguinte"}, "date": {"uk": "Дата", "en": "Date", "pt": "Data"}, "clear_day": {"uk": "Очистити цей день", "en": "Clear this day", "pt": "Limpar este dia"}, "go_today": {"uk": "Перейти до сьогодні", "en": "Go to today", "pt": "Ir para hoje"}, "all_days": {"uk": "Усі дні", "en": "All days", "pt": "Todos os dias"}, "days_stat": {"uk": "Заповнено днів: {n}. У середньому {k} ккал · {P} {p} · {F} {f} · {C} {c}.", "en": "Days logged: {n}. Average {k} kcal · {P} {p} · {F} {f} · {C} {c}.", "pt": "Dias registados: {n}. Média {k} kcal · {P} {p} · {F} {f} · {C} {c}."}, "days_empty": {"uk": "Поки жодного заповненого дня. Додай продукти на вкладці «День».", "en": "No days logged yet. Add foods on the \"Day\" tab.", "pt": "Ainda sem dias registados. Adiciona alimentos no separador «Dia»."}, "open_today": {"uk": "Відкрити сьогодні", "en": "Open today", "pt": "Abrir hoje"}, "other_date": {"uk": "Інша дата", "en": "Other date", "pt": "Outra data"}, "open_day": {"uk": "Відкрити день", "en": "Open day", "pt": "Abrir dia"}, "del_day": {"uk": "Видалити день", "en": "Delete day", "pt": "Apagar dia"}, "confirm_del_day": {"uk": "Видалити день {d}?", "en": "Delete day {d}?", "pt": "Apagar o dia {d}?"}, "confirm_clear_day": {"uk": "Очистити день {d}?", "en": "Clear day {d}?", "pt": "Limpar o dia {d}?"}, "pot_h": {"uk": "Страва на кількох", "en": "Dish for several people", "pt": "Prato para várias pessoas"}, "pot_hint": {"uk": "Внеси все, що пішло в страву, у сирому або сухому вигляді, потім зваж готову страву і свою порцію. Нижче приклад: рис, курячий фарш, капуста й соуси.", "en": "Enter everything that went into the dish, raw or dry, then weigh the finished dish and your portion. Example below: rice, chicken mince, cabbage and sauces.", "pt": "Introduz tudo o que foi para o prato, cru ou seco, depois pesa o prato pronto e a tua porção. Exemplo abaixo: arroz, frango picado, couve e molhos."}, "pot_empty": {"uk": "Додай інгредієнти, щоб порахувати страву.", "en": "Add ingredients to calculate the dish.", "pt": "Adiciona ingredientes para calcular o prato."}, "add_ingr": {"uk": "+ Інгредієнт", "en": "+ Ingredient", "pt": "+ Ingrediente"}, "pot_example": {"uk": "Повернути приклад", "en": "Restore example", "pt": "Repor exemplo"}, "tare": {"uk": "Порожня каструля, г", "en": "Empty pot, g", "pt": "Panela vazia, g"}, "gross": {"uk": "Каструля зі стравою, г", "en": "Pot with dish, g", "pt": "Panela com o prato, g"}, "portion": {"uk": "Моя порція, г", "en": "My portion, g", "pt": "A minha porção, g"}, "add_to": {"uk": "Додати в", "en": "Add to", "pt": "Adicionar a"}, "pot_add": {"uk": "Додати порцію в день {d}", "en": "Add portion to {d}", "pt": "Adicionar porção ao dia {d}"}, "pot_whole": {"uk": "Уся страва:", "en": "Whole dish:", "pt": "Prato inteiro:"}, "pot_enter": {"uk": "Введи вагу готової страви, щоб побачити розрахунок на 100 г і на порцію.", "en": "Enter the weight of the finished dish to see values per 100 g and per portion.", "pt": "Introduz o peso do prato pronto para ver os valores por 100 g e por porção."}, "pot_ready": {"uk": "Готово {n} г, на 100 г:", "en": "Cooked {n} g, per 100 g:", "pt": "Pronto {n} g, por 100 g:"}, "pot_portion": {"uk": "Порція {n} г: {k} ккал", "en": "Portion {n} g: {k} kcal", "pt": "Porção {n} g: {k} kcal"}, "pot_warn": {"uk": "Щоб додати порцію, внеси інгредієнти, вагу готової страви й вагу порції.", "en": "To add a portion, enter the ingredients, the cooked weight and the portion weight.", "pt": "Para adicionar a porção, introduz os ingredientes, o peso do prato pronto e o peso da porção."}, "pot_custom": {"uk": "Страва з каструлі", "en": "Dish from the pot", "pt": "Prato da panela"}, "noweigh_h": {"uk": "Якщо зважити не вийшло", "en": "If you could not weigh it", "pt": "Se não conseguiste pesar"}, "noweigh_p": {"uk": "У шаблонах є «Азійська страва (без зважування)»: це ≈ 150 ккал на 100 г готової страви. Якщо олії було помітно багато, додай у порцію ще 5–10 г олії окремим рядком.", "en": "Templates include \"Asian dish (no weighing)\": ≈ 150 kcal per 100 g of the cooked dish. If there was clearly a lot of oil, add another 5–10 g of oil as a separate line.", "pt": "Os modelos incluem «Prato asiático (sem pesar)»: ≈ 150 kcal por 100 g de prato cozinhado. Se havia claramente muito óleo, adiciona mais 5–10 g de óleo numa linha à parte."}, "my_food_h": {"uk": "Свій продукт з етикетки", "en": "Your own food from the label", "pt": "O teu alimento pelo rótulo"}, "my_food_hint": {"uk": "Показники на 100 г. Продукт з'явиться в списках у групі «Мої продукти».", "en": "Values per 100 g. The food will appear in the lists under \"My foods\".", "pt": "Valores por 100 g. O alimento aparece nas listas em «Os meus alimentos»."}, "name": {"uk": "Назва", "en": "Name", "pt": "Nome"}, "name_ph": {"uk": "Наприклад, хліб з пекарні", "en": "For example, bakery bread", "pt": "Por exemplo, pão da padaria"}, "kcal_l": {"uk": "Ккал", "en": "Kcal", "pt": "Kcal"}, "add_my": {"uk": "Додати продукт", "en": "Add food", "pt": "Adicionar alimento"}, "err_name": {"uk": "Вкажи назву продукту.", "en": "Enter the food name.", "pt": "Indica o nome do alimento."}, "err_vals": {"uk": "Вкажи калорії або білки, жири й вуглеводи.", "en": "Enter calories or protein, fat and carbs.", "pt": "Indica as calorias ou proteínas, gorduras e hidratos."}, "table_h": {"uk": "Таблиця на 100 г", "en": "Table per 100 g", "pt": "Tabela por 100 g"}, "food": {"uk": "Продукт", "en": "Food", "pt": "Alimento"}, "mine": {"uk": "Мої продукти", "en": "My foods", "pt": "Os meus alimentos"}, "del_food": {"uk": "Видалити продукт", "en": "Delete food", "pt": "Apagar alimento"}, "delete": {"uk": "Видалити", "en": "Delete", "pt": "Apagar"}, "grams": {"uk": "Грами", "en": "Grams", "pt": "Gramas"}, "product": {"uk": "Продукт", "en": "Food", "pt": "Alimento"}, "template": {"uk": "Шаблон", "en": "Template", "pt": "Modelo"}, "milk": {"uk": "Молоко", "en": "Milk", "pt": "Leite"}, "kcal100": {"uk": "ккал на 100 г", "en": "kcal per 100 g", "pt": "kcal por 100 g"}, "still": {"uk": "ще {n} {u}", "en": "{n} {u} left", "pt": "faltam {n} {u}"}, "over": {"uk": "+{n} {u} понад план", "en": "+{n} {u} over", "pt": "+{n} {u} acima"}, "of_kcal": {"uk": ", {a} з {b} ккал", "en": ", {a} of {b} kcal", "pt": ", {a} de {b} kcal"}, "nogoal_bar": {"uk": "За день: {k} ккал · {P} {p} · {F} {f} · {C} {c}", "en": "Today: {k} kcal · {P} {p} · {F} {f} · {C} {c}", "pt": "Hoje: {k} kcal · {P} {p} · {F} {f} · {C} {c}"}, "nogoal_bar2": {"uk": "Задай ціль вгорі, щоб бачити прогрес.", "en": "Set a goal above to see progress.", "pt": "Define um objetivo acima para ver o progresso."}, "exp_msg": {"uk": "Скопіюй увесь текст із поля.", "en": "Copy all the text from the box.", "pt": "Copia todo o texto da caixa."}, "copied": {"uk": "Скопійовано.", "en": "Copied.", "pt": "Copiado."}, "imp_err": {"uk": "Не вдалося прочитати дані. Перевір, чи скопійовано весь текст.", "en": "Could not read the data. Check that all the text was copied.", "pt": "Não foi possível ler os dados. Verifica se copiaste todo o texto."}, "imp_bad": {"uk": "Це не схоже на дані конструктора.", "en": "This does not look like constructor data.", "pt": "Isto não parece ser dados do construtor."}, "imp_confirm": {"uk": "Замінити поточні дані імпортованими?", "en": "Replace current data with the imported data?", "pt": "Substituir os dados atuais pelos importados?"}, "imp_ok": {"uk": "Дані імпортовано.", "en": "Data imported.", "pt": "Dados importados."}, "meal": {"uk": "Прийом їжі", "en": "Meal", "pt": "Refeição"}, "snack_drink": {"uk": "Перекус з напоєм", "en": "Snack with drink", "pt": "Lanche com bebida"}, "guide_none": {"uk": "Задай ціль вгорі сторінки, і тут з'являться орієнтири для кожного прийому їжі.", "en": "Set a goal at the top of the page and guide values for each meal will appear here.", "pt": "Define um objetivo no topo da página e aparecem aqui referências para cada refeição."}, "add_drink": {"uk": "☕ Напій…", "en": "☕ Drink…", "pt": "☕ Bebida…"}, "add_meal": {"uk": "+ Ще один прийом їжі", "en": "+ Another meal", "pt": "+ Mais uma refeição"}, "meal_name_q": {"uk": "Назва прийому їжі:", "en": "Meal name:", "pt": "Nome da refeição:"}, "meal_default": {"uk": "Другий перекус", "en": "Second snack", "pt": "Segundo lanche"}, "rename": {"uk": "Перейменувати", "en": "Rename", "pt": "Mudar o nome"}, "del_meal": {"uk": "Видалити прийом їжі", "en": "Delete meal", "pt": "Apagar refeição"}, "confirm_del_meal": {"uk": "Видалити «{n}»?", "en": "Delete \"{n}\"?", "pt": "Apagar «{n}»?"}, "hint_custom": {"uk": "Додатковий прийом їжі", "en": "Extra meal", "pt": "Refeição extra"}, "hint_snack": {"uk": "Орієнтир ≈ {k} ккал", "en": "Guide ≈ {k} kcal", "pt": "Referência ≈ {k} kcal"}, "search_ph": {"uk": "Пошук продукту…", "en": "Search foods…", "pt": "Procurar alimento…"}, "nothing_found": {"uk": "Нічого не знайдено", "en": "Nothing found", "pt": "Nada encontrado"}, "close": {"uk": "Закрити", "en": "Close", "pt": "Fechar"}, "choose_food": {"uk": "Обери продукт", "en": "Choose a food", "pt": "Escolhe um alimento"}, "calc_open": {"uk": "Розрахувати норму калорій", "en": "Calculate my calorie needs", "pt": "Calcular as minhas calorias"}, "calc_sex": {"uk": "Стать", "en": "Sex", "pt": "Sexo"}, "calc_f": {"uk": "Жінка", "en": "Female", "pt": "Mulher"}, "calc_m": {"uk": "Чоловік", "en": "Male", "pt": "Homem"}, "calc_w": {"uk": "Вага, кг", "en": "Weight, kg", "pt": "Peso, kg"}, "calc_h": {"uk": "Зріст, см", "en": "Height, cm", "pt": "Altura, cm"}, "calc_a": {"uk": "Вік, роки", "en": "Age, years", "pt": "Idade, anos"}, "calc_act": {"uk": "Активність", "en": "Activity", "pt": "Atividade"}, "act1": {"uk": "Мінімальна (сидяча робота, без тренувань) ×1,2", "en": "Sedentary (desk job, no training) ×1.2", "pt": "Sedentária (trabalho sentado, sem treino) ×1,2"}, "act2": {"uk": "Легка (1–3 тренування на тиждень) ×1,375", "en": "Light (1–3 workouts a week) ×1.375", "pt": "Leve (1–3 treinos por semana) ×1,375"}, "act3": {"uk": "Середня (3–5 тренувань на тиждень) ×1,55", "en": "Moderate (3–5 workouts a week) ×1.55", "pt": "Moderada (3–5 treinos por semana) ×1,55"}, "act4": {"uk": "Висока (6–7 тренувань на тиждень) ×1,725", "en": "High (6–7 workouts a week) ×1.725", "pt": "Elevada (6–7 treinos por semana) ×1,725"}, "act5": {"uk": "Дуже висока (фізична робота + тренування) ×1,9", "en": "Very high (physical job + training) ×1.9", "pt": "Muito elevada (trabalho físico + treino) ×1,9"}, "calc_fill": {"uk": "Заповни вагу, зріст і вік.", "en": "Fill in weight, height and age.", "pt": "Preenche peso, altura e idade."}, "f_hb": {"uk": "Харріс-Бенедикт", "en": "Harris-Benedict", "pt": "Harris-Benedict"}, "f_msj": {"uk": "Міффлін-Сан Жеор", "en": "Mifflin-St Jeor", "pt": "Mifflin-St Jeor"}, "f_hb2": {"uk": "Харріс-Бенедикт (переглянута, 1984)", "en": "Harris-Benedict (revised, 1984)", "pt": "Harris-Benedict (revista, 1984)"}, "calc_bmr": {"uk": "BMR, базовий обмін", "en": "BMR, basal metabolic rate", "pt": "BMR, metabolismo basal"}, "calc_avg": {"uk": "Середнє за трьома формулами", "en": "Average of the three formulas", "pt": "Média das três fórmulas"}, "calc_tdee": {"uk": "Норма з урахуванням активності", "en": "Daily needs with activity", "pt": "Necessidade diária com atividade"}, "calc_apply": {"uk": "Підставити {k} ккал у ціль", "en": "Use {k} kcal as my goal", "pt": "Usar {k} kcal como objetivo"}, "calc_note": {"uk": "Це орієнтир для підтримання ваги. Для схуднення зазвичай віднімають 10–20%, для набору додають.", "en": "This is a maintenance estimate. For weight loss people usually subtract 10–20%, for gain they add.", "pt": "É uma estimativa de manutenção. Para perder peso costuma-se retirar 10–20%, para ganhar acrescenta-se."}, "how_calc": {"uk": "Як рахуються калорії", "en": "How the calories are calculated", "pt": "Como se calculam as calorias"}, "calc_maint": {"uk": "Підтримання", "en": "Maintenance", "pt": "Manutenção"}, "calc_use": {"uk": "Підставити в ціль", "en": "Use as goal", "pt": "Usar como objetivo"}, "calc_prot": {"uk": "Білки, г на кг ваги", "en": "Protein, g per kg", "pt": "Proteínas, g por kg"}, "calc_fat": {"uk": "Жири, г на кг ваги", "en": "Fat, g per kg", "pt": "Gorduras, g por kg"}, "pk08": {"uk": "без активності", "en": "no activity", "pt": "sem atividade"}, "pk12": {"uk": "середня", "en": "moderate", "pt": "moderada"}, "pk16": {"uk": "середня-висока", "en": "moderate-high", "pt": "moderada-alta"}, "pk20": {"uk": "спортсмени", "en": "athletes", "pt": "atletas"}, "fk07": {"uk": "мінімум", "en": "minimum", "pt": "mínimo"}, "fk10": {"uk": "середня", "en": "average", "pt": "média"}, "fk20": {"uk": "максимум", "en": "maximum", "pt": "máximo"}, "calc_fat_hint": {"uk": "Мінімум 0,6–0,8 г/кг радять при ожирінні; 2 г/кг лише для професійних спортсменів.", "en": "Minimum 0.6–0.8 g/kg is advised for obesity; 2 g/kg only for professional athletes.", "pt": "O mínimo de 0,6–0,8 g/kg é aconselhado em caso de obesidade; 2 g/kg só para atletas profissionais."}, "calc_macros": {"uk": "Білки {p} г · Жири {f} г · Вуглеводи {c} г ({ck} ккал)", "en": "Protein {p} g · Fat {f} g · Carbs {c} g ({ck} kcal)", "pt": "Proteínas {p} g · Gorduras {f} g · Hidratos {c} g ({ck} kcal)"}, "calc_apply2": {"uk": "Підставити в ціль: {k} ккал, Б {p}, Ж {f}", "en": "Use as goal: {k} kcal, P {p}, F {f}", "pt": "Usar como objetivo: {k} kcal, P {p}, G {f}"}, "omega": {"uk": "Майже всі олії багаті на омега-6. Правильне співвідношення омега-6 до омега-3 — 2:1, тому частину жирів варто брати з жирної риби, а не лише з олії.", "en": "Almost all oils are rich in omega-6. The right omega-6 to omega-3 ratio is 2:1, so get part of your fat from oily fish rather than oil alone.", "pt": "Quase todos os óleos são ricos em ómega-6. A proporção certa de ómega-6 para ómega-3 é 2:1, por isso convém obter parte das gorduras de peixe gordo e não só de óleo."}, "wd": {"uk": "нд,пн,вт,ср,чт,пт,сб", "en": "Sun,Mon,Tue,Wed,Thu,Fri,Sat", "pt": "dom,seg,ter,qua,qui,sex,sáb"}, "wdl": {"uk": "неділя,понеділок,вівторок,середа,четвер,пʼятниця,субота", "en": "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday", "pt": "domingo,segunda-feira,terça-feira,quarta-feira,quinta-feira,sexta-feira,sábado"}, "locale": {"uk": "uk-UA", "en": "en-GB", "pt": "pt-PT"}, "datesep": {"uk": ".", "en": "/", "pt": "/"}};
+const GROUPS={"g0": {"uk": "Білок", "en": "Protein", "pt": "Proteína"}, "g1": {"uk": "Сири й молоко", "en": "Cheese & milk", "pt": "Queijos e leite"}, "g2": {"uk": "Крупи й хліб", "en": "Grains & bread", "pt": "Cereais e pão"}, "g3": {"uk": "Овочі", "en": "Vegetables", "pt": "Legumes"}, "g4": {"uk": "Фрукти", "en": "Fruit", "pt": "Fruta"}, "g5": {"uk": "Жири й горіхи", "en": "Fats & nuts", "pt": "Gorduras e frutos secos"}, "g6": {"uk": "Соуси й маринади", "en": "Sauces & marinades", "pt": "Molhos e marinadas"}, "g7": {"uk": "Солодке й напої", "en": "Sweets & drinks", "pt": "Doces e bebidas"}, "g8": {"uk": "Готові страви", "en": "Ready dishes", "pt": "Pratos prontos"}, "g9": {"uk": "Напої", "en": "Drinks", "pt": "Bebidas"}, "mine": {"uk": "Мої продукти", "en": "My foods", "pt": "Os meus alimentos"}};
+const HELP_T={"uk": "\n<section class=\"card help\"><h3>Як користуватися</h3>\n<ol><li>На вкладці «День» обери дату (стрілки або календар), потім у кожному прийомі їжі обери шаблон або додай продукти.</li>\n<li>Підкрути грами: смужки вгорі одразу показують, скільки лишилось до плану.</li>\n<li>Усі заповнені дні збираються на вкладці «Дні». Натисни на день, щоб відкрити й відредагувати його.</li></ol></section>\n<section class=\"card help\"><h3>Сире чи готове</h3>\n<p>М'ясо, рибу й крупи найточніше зважувати сирими або сухими: вага після приготування сильно залежить від часу й способу. Якщо зважила вже готове, обирай пункти «готова» або «варені».</p>\n<p>Приблизно: крупи після варіння важать у 2,5–3 рази більше, ніж сухі, а курка й риба втрачають 20–30% ваги.</p></section>\n<section class=\"card help\"><h3>☕ Капучино або матча лате</h3>\n<p>100 мл молока 1,5–1,8% дають ≈ 47 ккал (Б 3,3, Ж 1,6, В 4,9), молоко 3,5% ≈ 64 ккал. Матча додає ще ≈ 6 ккал, еспресо майже нічого. Цукор чи сироп рахуй окремо: 1 ч. л. цукру ≈ 20 ккал.</p>\n<p>Як вписувати: напої є в переліку продуктів у групі «Напої»: додай «Капучино» або «Матча лате» в будь-який прийом їжі і вкажи мілілітри. Це лише 2–3% денного плану, тому достатньо зробити перекус трохи меншим. У дні без напою з'являється запас ≈ 50–60 ккал: жменька ягід або кілька грамів олії.</p></section>\n<section class=\"card help\"><h3>🥢 Страви на кількох</h3>\n<p>Коли страва готується на кількох, рахуй її цілою, а потім бери свою частку:</p>\n<ol><li>Один раз зваж порожню каструлю чи сковорідку й запам'ятай цифру.</li>\n<li>Зваж усе, що йде всередину: рис сухим, фарш сирим, капусту, соуси й особливо олії.</li>\n<li>Коли страва готова, зваж її разом з посудом.</li>\n<li>Зваж свою порцію на тарілці.</li></ol>\n<p>Вкладка «Каструля» порахує решту.</p>\n<p><b>Найбільше важать олії.</b> 1 ст. л. кунжутної чи рослинної олії ≈ 120 ккал, гострої олії ≈ 100 ккал. Гочуджанг дає ≈ 45 ккал на 1 ст. л., цукор чи мед у маринаді 40–60 ккал. Соєвий соус дає лише ≈ 8 ккал на 1 ст. л., зате багато солі.</p>\n<p>Якщо зважити не вийшло, бери шаблон без зважування (≈ 150 ккал на 100 г).</p></section>\n<section class=\"card help\"><h3>Орієнтир на день</h3>\n<div class=\"tbl\"><table><thead><tr><th>@@meal@@</th><th>@@kcal_l@@</th><th>@@protein@@</th></tr></thead><tbody>\n@@GUIDE@@</tbody></table></div>\n<p>Два яйця вранці вже дають ≈ 10 г жиру. Решту жирів зручно добирати авокадо, оливками, горіхами й олією, а вуглеводи — крупами, хлібом і фруктами.</p></section>\n<section class=\"card help\" id=\"datacard\"><h3>Бекап і перенесення</h3>\n<p>Дані живуть у пам'яті цього браузера. Щоб перенести їх на інший пристрій або зберегти на всяк випадок, скопіюй текст нижче й встав його там через «Імпортувати».</p>\n<div class=\"actions\"><button class=\"btn\" data-act=\"exp\">Показати мої дані</button><button class=\"btn\" data-act=\"copy\">Скопіювати</button></div>\n<textarea id=\"dataio\" placeholder=\"Сюди можна вставити збережені дані з іншого пристрою\" spellcheck=\"false\"></textarea>\n<div class=\"actions\"><button class=\"btn solid\" data-act=\"imp\">Імпортувати</button></div>\n<p class=\"hint\" id=\"datamsg\"></p></section>\n<section class=\"card help\"><h3>Про цифри</h3>\n<p>Показники на 100 г усереднені. Вуглеводи вказані без клітковини, як на європейських етикетках. Якщо на упаковці твого продукту інші цифри, додай його у вкладці «Продукти».</p>\n<p>Ціль по вуглеводах рахується як залишок: калорії − (білки × 4 + жири × 9). Змінюєш калорії, білки чи жири, і вуглеводи в цілі перераховуються самі.</p></section>", "en": "\n<section class=\"card help\"><h3>How to use</h3>\n<ol><li>On the \"Day\" tab pick a date (arrows or calendar), then in each meal pick a template or add foods.</li>\n<li>Adjust the grams: the bars at the top show right away how much is left to your goal.</li>\n<li>All logged days are collected on the \"Days\" tab. Tap a day to open and edit it.</li></ol></section>\n<section class=\"card help\"><h3>Raw or cooked</h3>\n<p>Meat, fish and grains are most accurate weighed raw or dry: cooked weight depends a lot on time and method. If you weighed it cooked, choose the \"cooked\" entries.</p>\n<p>Roughly: grains weigh 2.5–3 times more after boiling than dry, and chicken and fish lose 20–30% of their weight.</p></section>\n<section class=\"card help\"><h3>☕ Cappuccino or matcha latte</h3>\n<p>100 ml of 1.5–1.8% milk is ≈ 47 kcal (P 3.3, F 1.6, C 4.9), 3.5% milk ≈ 64 kcal. Matcha adds ≈ 6 kcal, espresso almost nothing. Count sugar or syrup separately: 1 tsp of sugar ≈ 20 kcal.</p>\n<p>How to fit it in: drinks are in the food list under \"Drinks\": add \"Cappuccino\" or \"Matcha latte\" to any meal and enter the millilitres. It is only 2–3% of the daily plan, so a slightly smaller snack covers it. On days without a drink you gain ≈ 50–60 kcal: a handful of berries or a few grams of oil.</p></section>\n<section class=\"card help\"><h3>🥢 Dishes for several people</h3>\n<p>When a dish is cooked for several people, count the whole dish and then take your share:</p>\n<ol><li>Weigh the empty pot or pan once and remember the number.</li>\n<li>Weigh everything that goes in: rice dry, mince raw, cabbage, sauces and especially oils.</li>\n<li>When the dish is ready, weigh it together with the pot.</li>\n<li>Weigh your portion on the plate.</li></ol>\n<p>The \"Pot\" tab does the rest.</p>\n<p><b>Oils matter most.</b> 1 tbsp of sesame or vegetable oil ≈ 120 kcal, chili oil ≈ 100 kcal. Gochujang is ≈ 45 kcal per tbsp, sugar or honey in a marinade 40–60 kcal. Soy sauce is only ≈ 8 kcal per tbsp, but a lot of salt.</p>\n<p>If you could not weigh it, use the no-weighing template (≈ 150 kcal per 100 g).</p></section>\n<section class=\"card help\"><h3>Daily guide</h3>\n<div class=\"tbl\"><table><thead><tr><th>@@meal@@</th><th>@@kcal_l@@</th><th>@@protein@@</th></tr></thead><tbody>\n@@GUIDE@@</tbody></table></div>\n<p>Two eggs in the morning already give ≈ 10 g of fat. The rest of the fat is easy to get from avocado, olives, nuts and oil, and carbs from grains, bread and fruit.</p></section>\n<section class=\"card help\" id=\"datacard\"><h3>Backup and transfer</h3>\n<p>Data lives in this browser's storage. To move it to another device or keep a copy, copy the text below and paste it there via \"Import\".</p>\n<div class=\"actions\"><button class=\"btn\" data-act=\"exp\">Show my data</button><button class=\"btn\" data-act=\"copy\">Copy</button></div>\n<textarea id=\"dataio\" placeholder=\"Paste saved data from another device here\" spellcheck=\"false\"></textarea>\n<div class=\"actions\"><button class=\"btn solid\" data-act=\"imp\">Import</button></div>\n<p class=\"hint\" id=\"datamsg\"></p></section>\n<section class=\"card help\"><h3>About the numbers</h3>\n<p>Values per 100 g are averages. Carbs are given without fibre, as on European labels. If your product's label says otherwise, add it on the \"Foods\" tab.</p>\n<p>The carb goal is the remainder: calories − (protein × 4 + fat × 9). Change calories, protein or fat and the carb goal updates by itself.</p></section>", "pt": "\n<section class=\"card help\"><h3>Como usar</h3>\n<ol><li>No separador «Dia» escolhe a data (setas ou calendário) e, em cada refeição, escolhe um modelo ou adiciona alimentos.</li>\n<li>Ajusta as gramas: as barras no topo mostram logo quanto falta para o objetivo.</li>\n<li>Todos os dias registados ficam no separador «Dias». Toca num dia para o abrir e editar.</li></ol></section>\n<section class=\"card help\"><h3>Cru ou cozinhado</h3>\n<p>Carne, peixe e cereais pesam-se com mais precisão crus ou secos: o peso depois de cozinhar depende muito do tempo e do método. Se pesaste já cozinhado, escolhe as opções «cozinhado» ou «cozido».</p>\n<p>Aproximadamente: os cereais pesam 2,5–3 vezes mais depois de cozidos do que secos, e o frango e o peixe perdem 20–30% do peso.</p></section>\n<section class=\"card help\"><h3>☕ Cappuccino ou matcha latte</h3>\n<p>100 ml de leite meio-gordo dão ≈ 47 kcal (P 3,3, G 1,6, HC 4,9), leite gordo ≈ 64 kcal. O matcha acrescenta ≈ 6 kcal, o expresso quase nada. Açúcar ou xarope contam-se à parte: 1 c. chá de açúcar ≈ 20 kcal.</p>\n<p>Como encaixar: as bebidas estão na lista de alimentos, no grupo «Bebidas»: adiciona «Cappuccino» ou «Matcha latte» a qualquer refeição e indica os mililitros. São só 2–3% do plano diário, por isso basta um lanche um pouco mais pequeno. Nos dias sem bebida sobram ≈ 50–60 kcal: um punhado de frutos vermelhos ou uns gramas de azeite.</p></section>\n<section class=\"card help\"><h3>🥢 Pratos para várias pessoas</h3>\n<p>Quando o prato é feito para várias pessoas, conta o prato inteiro e depois tira a tua parte:</p>\n<ol><li>Pesa uma vez a panela ou frigideira vazia e guarda o número.</li>\n<li>Pesa tudo o que vai para dentro: arroz seco, carne picada crua, couve, molhos e sobretudo óleos.</li>\n<li>Quando o prato estiver pronto, pesa-o junto com a panela.</li>\n<li>Pesa a tua porção no prato.</li></ol>\n<p>O separador «Panela» faz o resto.</p>\n<p><b>Os óleos pesam mais.</b> 1 c. sopa de óleo de sésamo ou vegetal ≈ 120 kcal, óleo picante ≈ 100 kcal. O gochujang dá ≈ 45 kcal por c. sopa, açúcar ou mel na marinada 40–60 kcal. O molho de soja dá só ≈ 8 kcal por c. sopa, mas muito sal.</p>\n<p>Se não conseguiste pesar, usa o modelo sem pesar (≈ 150 kcal por 100 g).</p></section>\n<section class=\"card help\"><h3>Referência diária</h3>\n<div class=\"tbl\"><table><thead><tr><th>@@meal@@</th><th>@@kcal_l@@</th><th>@@protein@@</th></tr></thead><tbody>\n@@GUIDE@@</tbody></table></div>\n<p>Dois ovos de manhã já dão ≈ 10 g de gordura. O resto da gordura vem bem de abacate, azeitonas, frutos secos e azeite, e os hidratos de cereais, pão e fruta.</p></section>\n<section class=\"card help\" id=\"datacard\"><h3>Cópia de segurança e transferência</h3>\n<p>Os dados ficam na memória deste browser. Para os passar para outro dispositivo ou guardar uma cópia, copia o texto abaixo e cola-o lá em «Importar».</p>\n<div class=\"actions\"><button class=\"btn\" data-act=\"exp\">Mostrar os meus dados</button><button class=\"btn\" data-act=\"copy\">Copiar</button></div>\n<textarea id=\"dataio\" placeholder=\"Cola aqui os dados guardados noutro dispositivo\" spellcheck=\"false\"></textarea>\n<div class=\"actions\"><button class=\"btn solid\" data-act=\"imp\">Importar</button></div>\n<p class=\"hint\" id=\"datamsg\"></p></section>\n<section class=\"card help\"><h3>Sobre os números</h3>\n<p>Os valores por 100 g são médias. Os hidratos são indicados sem fibra, como nos rótulos europeus. Se o rótulo do teu produto disser outra coisa, adiciona-o no separador «Alimentos».</p>\n<p>O objetivo de hidratos é o restante: calorias − (proteínas × 4 + gorduras × 9). Alteras calorias, proteínas ou gorduras e o objetivo de hidratos atualiza-se sozinho.</p></section>"};
+const CALC_HELP={"uk": "<p><b>BMR</b> (базовий обмін) — це скільки калорій тіло витрачає в повному спокої за добу: на дихання, серце, температуру, роботу органів. Калькулятор рахує його трьома формулами й бере середнє, бо кожна формула дає трохи різний результат.</p>\n<p><b>1. Харріс-Бенедикт (1919)</b><br>Жінки: 655,1 + 9,6 × вага + 1,85 × зріст − 4,68 × вік<br>Чоловіки: 66,47 + 13,75 × вага + 5,0 × зріст − 6,74 × вік</p>\n<p><b>2. Міффлін-Сан Жеор (1990)</b><br>Жінки: 9,99 × вага + 6,25 × зріст − 4,92 × вік − 161<br>Чоловіки: 9,99 × вага + 6,25 × зріст − 4,92 × вік + 5</p>\n<p><b>3. Харріс-Бенедикт, переглянута (1984)</b><br>Жінки: 447,6 + 9,2 × вага + 3,1 × зріст − 4,3 × вік<br>Чоловіки: 88,36 + 13,4 × вага + 4,8 × зріст − 5,68 × вік</p>\n<p>Вага в кг, зріст у см, вік у роках. Середнє = (1 + 2 + 3) ÷ 3.</p>\n<p><b>Норма з урахуванням активності</b> = середній BMR × коефіцієнт: 1,2 сидячий спосіб життя, 1,375 легкі тренування 1–3 рази на тиждень, 1,55 середні 3–5 разів, 1,725 інтенсивні 6–7 разів, 1,9 фізична робота плюс тренування. Результат округлюється до 10 ккал.</p>\n<p>Це кількість калорій для підтримання ваги. Щоб худнути, зазвичай віднімають 10–20%, щоб набирати, додають. Формули дають орієнтир з похибкою близько ±10%, тому за 2–3 тижні варто звірити з реальною динамікою ваги.</p>\n<p><b>Білки</b> рахуються від ваги: 0,8 г/кг без активності, 1,2–1,6 г/кг при середній, 2 г/кг для спортсменів. Калькулятор підбирає значення за обраною активністю, але його можна змінити.</p>\n<p><b>Жири</b>: мінімум 0,6–0,8 г/кг (радять при ожирінні), середня норма 1 г/кг, максимум 2 г/кг лише для професійних спортсменів. Майже всі олії багаті на омега-6; правильне співвідношення омега-6 до омега-3 — 2:1.</p>\n<p><b>Вуглеводи</b> — усе, що лишилось: (калорії − білки × 4 − жири × 9) ÷ 4.</p>", "en": "<p><b>BMR</b> (basal metabolic rate) is how many calories your body burns per day at complete rest: breathing, heartbeat, temperature, organ function. The calculator uses three formulas and averages them, because each gives a slightly different result.</p>\n<p><b>1. Harris-Benedict (1919)</b><br>Women: 655.1 + 9.6 × weight + 1.85 × height − 4.68 × age<br>Men: 66.47 + 13.75 × weight + 5.0 × height − 6.74 × age</p>\n<p><b>2. Mifflin-St Jeor (1990)</b><br>Women: 9.99 × weight + 6.25 × height − 4.92 × age − 161<br>Men: 9.99 × weight + 6.25 × height − 4.92 × age + 5</p>\n<p><b>3. Harris-Benedict, revised (1984)</b><br>Women: 447.6 + 9.2 × weight + 3.1 × height − 4.3 × age<br>Men: 88.36 + 13.4 × weight + 4.8 × height − 5.68 × age</p>\n<p>Weight in kg, height in cm, age in years. Average = (1 + 2 + 3) ÷ 3.</p>\n<p><b>Daily needs with activity</b> = average BMR × factor: 1.2 sedentary, 1.375 light exercise 1–3 times a week, 1.55 moderate 3–5 times, 1.725 intense 6–7 times, 1.9 physical job plus training. The result is rounded to 10 kcal.</p>\n<p>This is the amount for maintaining weight. To lose weight people usually subtract 10–20%, to gain they add. The formulas are an estimate with roughly ±10% error, so check against your real weight trend after 2–3 weeks.</p>\n<p><b>Protein</b> is based on body weight: 0.8 g/kg with no activity, 1.2–1.6 g/kg with moderate activity, 2 g/kg for athletes. The calculator picks a value from your activity level, but you can change it.</p>\n<p><b>Fat</b>: minimum 0.6–0.8 g/kg (advised for obesity), average 1 g/kg, maximum 2 g/kg only for professional athletes. Almost all oils are rich in omega-6; the right omega-6 to omega-3 ratio is 2:1.</p>\n<p><b>Carbs</b> are the remainder: (calories − protein × 4 − fat × 9) ÷ 4.</p>", "pt": "<p><b>BMR</b> (metabolismo basal) é quantas calorias o corpo gasta por dia em repouso total: respiração, coração, temperatura, órgãos. A calculadora usa três fórmulas e faz a média, porque cada uma dá um resultado ligeiramente diferente.</p>\n<p><b>1. Harris-Benedict (1919)</b><br>Mulheres: 655,1 + 9,6 × peso + 1,85 × altura − 4,68 × idade<br>Homens: 66,47 + 13,75 × peso + 5,0 × altura − 6,74 × idade</p>\n<p><b>2. Mifflin-St Jeor (1990)</b><br>Mulheres: 9,99 × peso + 6,25 × altura − 4,92 × idade − 161<br>Homens: 9,99 × peso + 6,25 × altura − 4,92 × idade + 5</p>\n<p><b>3. Harris-Benedict, revista (1984)</b><br>Mulheres: 447,6 + 9,2 × peso + 3,1 × altura − 4,3 × idade<br>Homens: 88,36 + 13,4 × peso + 4,8 × altura − 5,68 × idade</p>\n<p>Peso em kg, altura em cm, idade em anos. Média = (1 + 2 + 3) ÷ 3.</p>\n<p><b>Necessidade diária com atividade</b> = BMR médio × fator: 1,2 sedentário, 1,375 exercício leve 1–3 vezes por semana, 1,55 moderado 3–5 vezes, 1,725 intenso 6–7 vezes, 1,9 trabalho físico mais treino. O resultado é arredondado a 10 kcal.</p>\n<p>É a quantidade para manter o peso. Para perder peso costuma-se retirar 10–20%, para ganhar acrescenta-se. As fórmulas são uma estimativa com cerca de ±10% de erro, por isso convém comparar com a evolução real do peso ao fim de 2–3 semanas.</p>\n<p><b>Proteínas</b> calculam-se pelo peso: 0,8 g/kg sem atividade, 1,2–1,6 g/kg com atividade moderada, 2 g/kg para atletas. A calculadora escolhe o valor pela atividade indicada, mas podes alterá-lo.</p>\n<p><b>Gorduras</b>: mínimo 0,6–0,8 g/kg (aconselhado em caso de obesidade), média 1 g/kg, máximo 2 g/kg só para atletas profissionais. Quase todos os óleos são ricos em ómega-6; a proporção certa de ómega-6 para ómega-3 é 2:1.</p>\n<p><b>Hidratos</b> são o restante: (calorias − proteínas × 4 − gorduras × 9) ÷ 4.</p>"};
+const LANGS=['uk','en','pt'];
+const detectLang=()=>{const l=(navigator.language||'en').toLowerCase();return l.startsWith('uk')?'uk':l.startsWith('pt')?'pt':'en';};
+const L=()=>state.lang||'uk';
+const t=(k,v)=>{let x=(STR[k]||{})[L()]??k;if(v)for(const a in v)x=x.split('{'+a+'}').join(v[a]);return x;};
+const N=x=>Array.isArray(x)?x[LANGS.indexOf(L())]||x[0]:x;
+const GNAME=g=>(GROUPS[g]||{})[L()]||g;
+const DEFAULT_TARGET={k:0,p:0,f:0,c:0};
+const hasGoal=()=>T().k>0;
+const T=()=>state.target;
+const r10=n=>Math.round(n/10)*10;
+const pf=v=>{const n=parseFloat(String(v??'').trim().replace(',','.'));return isFinite(n)?n:0;};
+const syncC=()=>{const t=state.target;t.c=Math.max(0,(t.k-t.p*4-t.f*9)/4);};
+const PRODUCTS=[
+  {id:'egg',g:'g0',n:["Яйця (без шкаралупи)", "Eggs (without shell)", "Ovos (sem casca)"],k:143,p:12.6,f:9.5,c:0.7},
+  {id:'chk_raw',g:'g0',n:["Куряча грудка, сира", "Chicken breast, raw", "Peito de frango, cru"],k:113,p:23.6,f:1.9,c:0},
+  {id:'chk_ck',g:'g0',n:["Куряча грудка, готова", "Chicken breast, cooked", "Peito de frango, cozinhado"],k:165,p:31,f:3.6,c:0},
+  {id:'chk_mince',g:'g0',n:["Курячий фарш, сирий", "Chicken mince, raw", "Frango picado, cru"],k:143,p:17.4,f:8.1,c:0},
+  {id:'salmon',g:'g0',n:["Лосось, сирий", "Salmon, raw", "Salmão, cru"],k:208,p:20.4,f:13.4,c:0},
+  {id:'cod',g:'g0',n:["Тріска, сира", "Cod, raw", "Bacalhau fresco, cru"],k:82,p:17.8,f:0.7,c:0},
+  {id:'dorada',g:'g0',n:["Дорада, філе сире", "Sea bream fillet, raw", "Dourada, filete cru"],k:121,p:19.8,f:4.6,c:0},
+  {id:'shrimp',g:'g0',n:["Креветки, сирі очищені", "Shrimp, raw peeled", "Camarão, cru descascado"],k:85,p:20.1,f:0.5,c:0},
+  {id:'shrimp_ck',g:'g0',n:["Креветки, варені", "Shrimp, cooked", "Camarão, cozido"],k:99,p:24,f:0.3,c:0.2},
+  {id:'sardine',g:'g0',n:["Сардини консервовані, без олії", "Canned sardines, no oil", "Sardinhas em lata, sem óleo"],k:208,p:24.6,f:11.5,c:0},
+  {id:'veal',g:'g0',n:["Телятина, сира", "Veal, raw", "Vitela, crua"],k:120,p:20.5,f:4.1,c:0},
+  {id:'pork',g:'g0',n:["Свинина пісна, сира", "Lean pork, raw", "Porco magro, cru"],k:143,p:21,f:6.5,c:0},
+  {id:'liver',g:'g0',n:["Куряча печінка, сира", "Chicken liver, raw", "Fígado de frango, cru"],k:119,p:16.9,f:4.8,c:0.7},
+  {id:'pate',g:'g0',n:["Паштет домашній (без масла)", "Homemade pâté (no butter)", "Patê caseiro (sem manteiga)"],k:130,p:17,f:5,c:4},
+  {id:'chk_chips',g:'g0',n:["Курячі чіпси «Dry Chicken Hot» (XO)", "Chicken chips “Dry Chicken Hot” (XO)", "Chips de frango “Dry Chicken Hot” (XO)"],k:294,p:63,f:3.2,c:3.2},
+  {id:'aged',g:'g1',n:["Сир витриманий 6–12 міс", "Aged cheese, 6–12 months", "Queijo curado, 6–12 meses"],k:390,p:26,f:31,c:1},
+  {id:'parm',g:'g1',n:["Пармезан", "Parmesan", "Parmesão"],k:392,p:36,f:26,c:3},
+  {id:'mozz',g:'g1',n:["Моцарела лайт", "Mozzarella light", "Mozzarella light"],k:153,p:17,f:9,c:1},
+  {id:'mozz_full',g:'g1',n:["Моцарела звичайна", "Mozzarella, regular", "Mozzarella normal"],k:280,p:18,f:22,c:1},
+  {id:'ched',g:'g1',n:["Чедер", "Cheddar", "Cheddar"],k:403,p:23,f:33,c:3},
+  {id:'blue',g:'g1',n:["Блакитний сир", "Blue cheese", "Queijo azul"],k:353,p:21.4,f:28.7,c:2.3},
+  {id:'milk16',g:'g1',n:["Молоко 1,5–1,8% (мл)", "Milk 1.5–1.8% (ml)", "Leite meio-gordo (ml)"],k:47,p:3.3,f:1.6,c:4.9},
+  {id:'milk35',g:'g1',n:["Молоко 3,5% (мл)", "Milk 3.5% (ml)", "Leite gordo (ml)"],k:64,p:3.2,f:3.6,c:4.7},
+  {id:'buck',g:'g2',n:["Гречка, суха", "Buckwheat, dry", "Trigo-sarraceno, seco"],k:330,p:12.6,f:3.3,c:62},
+  {id:'bulgur',g:'g2',n:["Булгур, сухий", "Bulgur, dry", "Bulgur, seco"],k:340,p:12.3,f:1.3,c:70},
+  {id:'basmati',g:'g2',n:["Рис басматі, сухий", "Basmati rice, dry", "Arroz basmati, seco"],k:350,p:8,f:0.6,c:78},
+  {id:'sushi',g:'g2',n:["Рис для суші, сухий", "Sushi rice, dry", "Arroz para sushi, seco"],k:355,p:6.5,f:0.5,c:80},
+  {id:'rice_ck',g:'g2',n:["Рис, варений", "Rice, cooked", "Arroz, cozido"],k:130,p:2.7,f:0.3,c:28},
+  {id:'pasta',g:'g2',n:["Макарони, сухі", "Pasta, dry", "Massa, seca"],k:350,p:12,f:1.5,c:71},
+  {id:'pasta_ck',g:'g2',n:["Макарони, варені", "Pasta, cooked", "Massa, cozida"],k:140,p:4.8,f:0.6,c:28.4},
+  {id:'potato',g:'g2',n:["Картопля, сира", "Potato, raw", "Batata, crua"],k:77,p:2,f:0.1,c:16.5},
+  {id:'bread',g:'g2',n:["Хліб на заквасці", "Sourdough bread", "Pão de massa mãe"],k:260,p:9,f:1.6,c:52},
+  {id:'carrot',g:'g3',n:["Морква", "Carrot", "Cenoura"],k:35,p:1.3,f:0.1,c:7},
+  {id:'pepper',g:'g3',n:["Перець солодкий", "Bell pepper", "Pimento"],k:27,p:1.3,f:0,c:5.3},
+  {id:'tomato',g:'g3',n:["Помідори", "Tomatoes", "Tomate"],k:18,p:0.9,f:0.2,c:2.7},
+  {id:'onion',g:'g3',n:["Цибуля", "Onion", "Cebola"],k:40,p:1.1,f:0.1,c:7.6},
+  {id:'arugula',g:'g3',n:["Рукола", "Rocket", "Rúcula"],k:25,p:2.6,f:0.7,c:2},
+  {id:'cabbage',g:'g3',n:["Капуста білокачанна", "White cabbage", "Couve branca"],k:25,p:1.3,f:0.1,c:3.3},
+  {id:'broccoli',g:'g3',n:["Броколі", "Broccoli", "Brócolos"],k:34,p:2.8,f:0.4,c:4},
+  {id:'cucumber',g:'g3',n:["Огірок", "Cucumber", "Pepino"],k:15,p:0.7,f:0.1,c:2.9},
+  {id:'rasp',g:'g4',n:["Малина", "Raspberries", "Framboesas"],k:45,p:1.2,f:0.7,c:5.5},
+  {id:'bluebr',g:'g4',n:["Лохина", "Blueberries", "Mirtilos"],k:57,p:0.7,f:0.3,c:12},
+  {id:'plum',g:'g4',n:["Сливи", "Plums", "Ameixas"],k:46,p:0.7,f:0.3,c:10},
+  {id:'mango',g:'g4',n:["Манго", "Mango", "Manga"],k:60,p:0.8,f:0.4,c:13.4},
+  {id:'avo',g:'g5',n:["Авокадо", "Avocado", "Abacate"],k:160,p:2,f:14.7,c:2},
+  {id:'olive_oil',g:'g5',n:["Оливкова олія", "Olive oil", "Azeite"],k:900,p:0,f:100,c:0},
+  {id:'olives',g:'g5',n:["Оливки", "Olives", "Azeitonas"],k:145,p:1,f:15,c:0.5},
+  {id:'brazil',g:'g5',n:["Бразильський горіх", "Brazil nuts", "Castanha-do-brasil"],k:656,p:14.3,f:66.4,c:4.2},
+  {id:'butter',g:'g5',n:["Вершкове масло", "Butter", "Manteiga"],k:717,p:0.9,f:81,c:0.1},
+  {id:'veg_oil',g:'g5',n:["Олія рослинна для смаження", "Vegetable oil for frying", "Óleo vegetal para fritar"],k:900,p:0,f:100,c:0},
+  {id:'sesame_oil',g:'g5',n:["Кунжутна олія", "Sesame oil", "Óleo de sésamo"],k:900,p:0,f:100,c:0},
+  {id:'soy',g:'g6',n:["Соєвий соус", "Soy sauce", "Molho de soja"],k:53,p:8.1,f:0.6,c:4.9},
+  {id:'gochu',g:'g6',n:["Гочуджанг", "Gochujang", "Gochujang"],k:220,p:4.5,f:1.5,c:46},
+  {id:'chili_oil',g:'g6',n:["Гостра олія", "Chili oil", "Óleo picante"],k:800,p:1,f:87,c:4},
+  {id:'sugar',g:'g6',n:["Цукор", "Sugar", "Açúcar"],k:400,p:0,f:0,c:100},
+  {id:'honey',g:'g6',n:["Мед", "Honey", "Mel"],k:330,p:0.3,f:0,c:82},
+  {id:'matcha',g:'g7',n:["Матча, порошок", "Matcha powder", "Matcha em pó"],k:324,p:30,f:5.3,c:39},
+  {id:'mm_pea',g:'g7',n:["M&M's з арахісом", "Peanut M&M's", "M&M's de amendoim"],k:512,p:9.5,f:25,c:60},
+  {id:'mm',g:'g7',n:["M&M's класичні", "M&M's classic", "M&M's clássicos"],k:492,p:4.3,f:21,c:71.3},
+  {id:'bueno',g:'g7',n:["Kinder Bueno", "Kinder Bueno", "Kinder Bueno"],k:572,p:8.6,f:37.3,c:49.5},
+  {id:'kinder',g:'g7',n:["Kinder Chocolate (батончик)", "Kinder Chocolate (bar)", "Kinder Chocolate (barra)"],k:566,p:8.7,f:35,c:53.5},
+  {id:'korivka',g:'g7',n:["Цукерка «Корівка»", "“Korivka” fudge candy", "Caramelo “Korivka”"],k:393,p:3.3,f:6.2,c:81},
+  {id:'cap16',g:'g9',n:["Капучино на молоці 1,5% (мл)", "Cappuccino, 1.5% milk (ml)", "Cappuccino, leite meio-gordo (ml)"],k:47,p:3.3,f:1.6,c:4.9},
+  {id:'cap35',g:'g9',n:["Капучино на молоці 3,5% (мл)", "Cappuccino, 3.5% milk (ml)", "Cappuccino, leite gordo (ml)"],k:64,p:3.2,f:3.6,c:4.7},
+  {id:'mat16',g:'g9',n:["Матча лате на молоці 1,5% (мл)", "Matcha latte, 1.5% milk (ml)", "Matcha latte, leite meio-gordo (ml)"],k:52,p:3.8,f:1.7,c:5.6},
+  {id:'mat35',g:'g9',n:["Матча лате на молоці 3,5% (мл)", "Matcha latte, 3.5% milk (ml)", "Matcha latte, leite gordo (ml)"],k:69,p:3.7,f:3.7,c:5.4},
+  {id:'espresso',g:'g9',n:["Еспресо / чорна кава (мл)", "Espresso / black coffee (ml)", "Expresso / café preto (ml)"],k:2,p:0.1,f:0,c:0},
+  {id:'pornstar',g:'g9',n:["Порнстар мартіні (100 = 1 бокал)", "Porn Star Martini (100 = 1 glass)", "Porn Star Martini (100 = 1 copo)"],k:258,p:0.3,f:0,c:24},
+  {id:'beer_wheat',g:'g9',n:["Пиво пшеничне, 5% (мл)", "Wheat beer, 5% (ml)", "Cerveja de trigo, 5% (ml)"],k:45,p:0.5,f:0,c:3.5},
+  {id:'beer_corona',g:'g9',n:["Пиво Corona Extra (мл)", "Corona Extra beer (ml)", "Cerveja Corona Extra (ml)"],k:42,p:0.3,f:0,c:3.9},
+  {id:'asian_est',g:'g8',n:["Азійська страва (оцінка, готова)", "Asian dish (estimate, cooked)", "Prato asiático (estimativa, cozinhado)"],k:150,p:8.5,f:6.5,c:14},
+];
+const MEALS=[
+  {id:'breakfast',share:.24,pLo:.23},
+  {id:'lunch',share:.315,pLo:.32,pHi:.41},
+  {id:'snack',share:.12,drink:true},
+  {id:'dinner',share:.325,pLo:.32,pHi:.37},
+];
+function mealGuide(m){
+  const k=r10(T().k*m.share),p=T().p;
+  const g=t('g'),prot=m.pHi?`${Math.round(p*m.pLo)}–${Math.round(p*m.pHi)} ${g}`:m.pLo?`${t('from')} ${Math.round(p*m.pLo)} ${g}`:`${Math.round(p*.05)}–${Math.round(p*.09)} ${g}`;
+  return {k,prot};
+}
+function mealHint(m){if(m.custom)return t('hint_custom');if(!hasGoal())return '';const g=mealGuide(m);return m.drink?t('hint_snack',{k:g.k}):t('hint_meal',{k:g.k,p:g.prot});}
+const TPL=[
+  {id:'b1',grp:["Сніданки", "Breakfasts", "Pequenos-almoços"],n:["Яйця + тост з авокадо і сиром", "Eggs + avocado & cheese toast", "Ovos + tosta de abacate e queijo"],items:[['egg',100],['bread',60],['avo',40],['aged',15],['carrot',50]]},
+  {id:'b2',grp:["Сніданки", "Breakfasts", "Pequenos-almoços"],n:["Яйця + паштет на тості", "Eggs + pâté on toast", "Ovos + patê na tosta"],items:[['egg',100],['pate',60],['bread',50],['cucumber',100]]},
+  {id:'b3',grp:["Сніданки", "Breakfasts", "Pequenos-almoços"],n:["Яйця + пармезан + малина", "Eggs + parmesan + raspberries", "Ovos + parmesão + framboesas"],items:[['egg',100],['parm',10],['bread',50],['tomato',100],['rasp',100]]},
+  {id:'m1',grp:["Обід або вечеря", "Lunch or dinner", "Almoço ou jantar"],n:["Курка + басматі + броколі", "Chicken + basmati + broccoli", "Frango + basmati + brócolos"],items:[['chk_raw',150],['basmati',80],['broccoli',150],['olive_oil',7]]},
+  {id:'m2',grp:["Обід або вечеря", "Lunch or dinner", "Almoço ou jantar"],n:["Курка в азійському маринаді + рис", "Asian-marinated chicken + rice", "Frango em marinada asiática + arroz"],items:[['chk_raw',150],['basmati',80],['cabbage',150],['soy',15],['honey',7],['sesame_oil',5]]},
+  {id:'m3',grp:["Обід або вечеря", "Lunch or dinner", "Almoço ou jantar"],n:["Боул з лососем", "Salmon bowl", "Bowl de salmão"],items:[['salmon',130],['sushi',80],['cucumber',100],['avo',40],['soy',15]]},
+  {id:'m4',grp:["Обід або вечеря", "Lunch or dinner", "Almoço ou jantar"],n:["Тріска з картоплею (аерогриль)", "Cod with potatoes (air fryer)", "Bacalhau com batatas (air fryer)"],items:[['cod',180],['potato',250],['carrot',150],['olive_oil',8]]},
+  {id:'m5',grp:["Обід або вечеря", "Lunch or dinner", "Almoço ou jantar"],n:["Дорада + булгур з помідорами", "Sea bream + bulgur with tomatoes", "Dourada + bulgur com tomate"],items:[['dorada',170],['bulgur',70],['tomato',150],['olive_oil',5]]},
+  {id:'m6',grp:["Обід або вечеря", "Lunch or dinner", "Almoço ou jantar"],n:["Креветки + гречка + перці", "Shrimp + buckwheat + peppers", "Camarão + trigo-sarraceno + pimentos"],items:[['shrimp',180],['buck',70],['pepper',150],['olive_oil',7]]},
+  {id:'m7',grp:["Обід або вечеря", "Lunch or dinner", "Almoço ou jantar"],n:["Стейк з телятини + гречка + рукола", "Veal steak + buckwheat + rocket", "Bife de vitela + trigo-sarraceno + rúcula"],items:[['veal',160],['buck',70],['arugula',30],['olive_oil',7]]},
+  {id:'m8',grp:["Обід або вечеря", "Lunch or dinner", "Almoço ou jantar"],n:["Сирна паста з куркою", "Cheesy pasta with chicken", "Massa com queijo e frango"],items:[['pasta',75],['chk_raw',130],['ched',20],['blue',15],['milk16',50]]},
+  {id:'m9',grp:["Обід або вечеря", "Lunch or dinner", "Almoço ou jantar"],n:["Азійська страва (без зважування)", "Asian dish (no weighing)", "Prato asiático (sem pesar)"],items:[['asian_est',350],['cucumber',100]]},
+  {id:'s1',grp:["Перекуси", "Snacks", "Lanches"],n:["Лохина + бразильський горіх", "Blueberries + Brazil nuts", "Mirtilos + castanha-do-brasil"],items:[['bluebr',150],['brazil',10]]},
+  {id:'s2',grp:["Перекуси", "Snacks", "Lanches"],n:["Манго + витриманий сир", "Mango + aged cheese", "Manga + queijo curado"],items:[['mango',150],['aged',20]]},
+  {id:'s3',grp:["Перекуси", "Snacks", "Lanches"],n:["Сливи + малина", "Plums + raspberries", "Ameixas + framboesas"],items:[['plum',150],['rasp',100]]},
+  {id:'s4',grp:["Перекуси", "Snacks", "Lanches"],n:["M&M's з арахісом", "Peanut M&M's", "M&M's de amendoim"],items:[['mm_pea',30]]},
+];
+const KEY='raciony-v2',OLDKEY='raciony-v1';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const Z=()=>({k:0,p:0,f:0,c:0});
+const fmt=(n,d=0)=>(+n||0).toLocaleString(t('locale'),{maximumFractionDigits:d});
+const tplRows=id=>TPL.find(t=>t.id===id).items.map(([pid,g])=>({pid,g}));
+const potDefault=()=>[{pid:'sushi',g:200},{pid:'chk_mince',g:500},{pid:'cabbage',g:400},{pid:'veg_oil',g:15},{pid:'sesame_oil',g:10},{pid:'soy',g:30},{pid:'gochu',g:20},{pid:'chili_oil',g:10}];
+const pad=n=>String(n).padStart(2,'0');
+const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;};
+const isISO=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||'');
+const shiftISO=(iso,n)=>{const [y,m,d]=iso.split('-').map(Number);const dt=new Date(y,m-1,d+n);return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;};
+const fmtDate=iso=>{const [y,m,d]=iso.split('-'),sp=t('datesep');return `${d}${sp}${m}${sp}${y}`;};
+const wd=(iso,long)=>{const [y,m,d]=iso.split('-').map(Number);return t(long?'wdl':'wd').split(',')[new Date(y,m-1,d).getDay()];};
+const emptyDay=()=>({meals:{breakfast:[],lunch:[],snack:[],dinner:[]},extra:[]});
+function defaultState(){return {view:'day',lang:detectLang(),calc:{sex:'f',w:'',h:'',a:'',act:'1.375'},date:todayISO(),days:{},target:{...DEFAULT_TARGET},mine:[],pot:{rows:potDefault(),tare:0,gross:1310,portion:350,to:'dinner'}};}
+function normDay(d){const b=emptyDay();if(!d||typeof d!=='object')return b;
+  const o=Object.assign(b,d,{meals:Object.assign(b.meals,d.meals||{}),extra:Array.isArray(d.extra)?d.extra.filter(e=>e&&e.id&&e.name):[]});
+  if(o.drink&&o.drink!=='none'){o.meals.snack.push({pid:(o.drink==='matcha'?'mat':'cap')+(o.milk==='milk35'?'35':'16'),g:100});}
+  delete o.drink;delete o.milk;
+  for(const e of o.extra)if(!Array.isArray(o.meals[e.id]))o.meals[e.id]=[];
+  return o;}
+function merge(s){
+  const d=defaultState();
+  const st=Object.assign(d,s,{pot:Object.assign(d.pot,s.pot||{}),mine:s.mine||[],target:Object.assign(d.target,s.target||{}),calc:Object.assign(d.calc,s.calc||{}),days:{}});
+  for(const k of Object.keys(s.days||{}))if(isISO(k))st.days[k]=normDay(s.days[k]);
+  if(!isISO(st.date))st.date=todayISO();
+  if(!LANGS.includes(st.lang))st.lang=detectLang();
+  return st;
+}
+function load(){
+  try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.target)return merge(s);}catch(e){}
+  try{const o=JSON.parse(localStorage.getItem(OLDKEY)||'null');
+    if(o&&o.target){const st=defaultState();st.mine=o.mine||[];st.pot=Object.assign(st.pot,o.pot||{});return st;}
+  }catch(e){}
+  return defaultState();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+let state=load();
+const cur=()=>state.days[state.date]||(state.days[state.date]=emptyDay());
+const peek=iso=>state.days[iso]||emptyDay();
+
+const allP=()=>PRODUCTS.concat(state.mine||[]);
+const byId=id=>allP().find(x=>x.id===id);
+const groups=()=>[...new Set(allP().map(x=>x.g))];
+function info(r){const i=r.custom||byId(r.pid)||{n:'?',k:0,p:0,f:0,c:0};return r.custom&&r.custom.pot?Object.assign({},i,{n:t('pot_custom')}):i;}
+function scaled(r){const i=info(r),m=(+r.g||0)/100;return {k:i.k*m,p:i.p*m,f:i.f*m,c:i.c*m};}
+const addT=(a,b)=>({k:a.k+b.k,p:a.p+b.p,f:a.f+b.f,c:a.c+b.c});
+const scale=(t,x)=>({k:t.k*x,p:t.p*x,f:t.f*x,c:t.c*x});
+const sum=rows=>rows.reduce((t,r)=>addT(t,scaled(r)),Z());
+const allMeals=d=>MEALS.concat((d.extra||[]).map(e=>({id:e.id,name:e.name,custom:true})));
+const mealName=m=>m.custom?m.name:t('m_'+m.id);
+const mealRowsOf=(d,id)=>d.meals[id]||[];
+const dayTotal=d=>allMeals(d).reduce((t,m)=>addT(t,sum(mealRowsOf(d,m.id))),Z());
+const hasData=d=>allMeals(d).some(m=>mealRowsOf(d,m.id).length);
+const listOf=el=>el.dataset.scope==='pot'?state.pot.rows:cur().meals[el.dataset.meal];
+const getRow=el=>{const r=el.closest('.row');return listOf(r)[+r.dataset.i];};
+
+function macroLine(m,withK=true){
+  return (withK?`<b>${fmt(m.k)} ${t('kcal')}</b>`:'')+
+  `<span class="m"><i style="background:var(--p)"></i>${t('P')} ${fmt(m.p,1)}</span>`+
+  `<span class="m"><i style="background:var(--f)"></i>${t('F')} ${fmt(m.f,1)}</span>`+
+  `<span class="m"><i style="background:var(--c)"></i>${t('C')} ${fmt(m.c,1)}</span>`;
+}
+function productOptions(sel){
+  return groups().map(g=>`<optgroup label="${esc(GNAME(g))}">`+allP().filter(x=>x.g===g).map(x=>`<option value="${x.id}"${x.id===sel?' selected':''}>${esc(N(x.n))}</option>`).join('')+'</optgroup>').join('');
+}
+function tplOptions(){
+  return [...new Set(TPL.map(x=>x.grp[0]))].map(g=>`<optgroup label="${esc(N(TPL.find(x=>x.grp[0]===g).grp))}">`+TPL.filter(x=>x.grp[0]===g).map(x=>`<option value="${x.id}">${esc(N(x.n))}</option>`).join('')+'</optgroup>').join('');
+}
+function rowHTML(scope,meal,i,r){
+  const name=r.custom?`<div class="custom-name">${esc(info(r).n)}<small>${fmt(r.custom.k)} ${t('kcal100')}</small></div>`
+    :`<button class="pick" data-act="pick" type="button">${esc(N(info(r).n))}</button>`;
+  return `<div class="row" data-scope="${scope}" data-meal="${meal}" data-i="${i}">${name}
+    <label class="g"><input type="text" inputmode="decimal" value="${r.g}" data-act="g" aria-label="${t('grams')}"><span>${t('g')}</span></label>
+    <button class="x" data-act="del" aria-label="${t('delete')}">×</button>
+    <div class="rm" data-role="rm">${macroLine(scaled(r))}</div></div>`;
+}
+function mealHTML(m){
+  const rows=mealRowsOf(cur(),m.id);
+  return `<section class="card meal" data-meal="${m.id}">
+    <header><div><h2>${esc(mealName(m))}${m.custom?` <button class="x sm" data-act="renmeal" data-meal="${m.id}" aria-label="${t('rename')}" title="${t('rename')}">✎</button>`:''}</h2>${mealHint(m)?`<p class="hint">${mealHint(m)}</p>`:''}</div><div class="mt" data-role="mt-${m.id}"></div></header>
+    <div>${rows.map((r,i)=>rowHTML('meal',m.id,i,r)).join('')}</div>
+    <div class="actions">
+      <button class="btn" data-act="add" data-meal="${m.id}">${t('add_food')}</button>
+      <select class="tpl" data-act="tpl" data-meal="${m.id}" aria-label="${t('template')}"><option value="">${t('pick_tpl')}</option>${tplOptions()}</select>
+      ${rows.length?`<button class="btn ghost" data-act="clear" data-meal="${m.id}">${t('clear')}</button>`:''}
+      ${m.custom?`<button class="btn ghost" data-act="delmeal" data-meal="${m.id}">${t('del_meal')}</button>`:''}
+    </div></section>`;
+}
+function dateTitle(iso){const td=todayISO();if(iso===td)return `${t('today_')}, ${wd(iso,true)}`;if(iso===shiftISO(td,-1))return `${t('yesterday')}, ${wd(iso,true)}`;if(iso===shiftISO(td,1))return `${t('tomorrow')}, ${wd(iso,true)}`;return wd(iso,true);}
+function dayHTML(){
+  return `<div class="datebar">
+    <button class="nav" data-act="dprev" aria-label="${t('prev_day')}">‹</button>
+    <div class="dl"><div class="dt" id="dtitle">${dateTitle(state.date)}</div><input type="date" data-act="date" value="${state.date}" aria-label="${t('date')}"></div>
+    <button class="nav" data-act="dnext" aria-label="${t('next_day')}">›</button></div>`+
+    allMeals(cur()).map(mealHTML).join('')+
+    `<button class="btn wide" data-act="addmeal">${t('add_meal')}</button>`+
+    (hasData(cur())?`<button class="btn ghost wide" data-act="cleardaybtn">${t('clear_day')}</button>`:'')+
+    `<button class="btn ghost wide" data-act="today">${t('go_today')}</button>`;
+}
+function daysHTML(){
+  const keys=Object.keys(state.days).filter(k=>hasData(state.days[k])).sort().reverse();
+  const rows=keys.map(k=>{const tt=dayTotal(state.days[k]);
+    return `<div class="dayrow${k===state.date?' cur':''}" data-act="open" data-d="${k}" role="button" tabindex="0">
+      <div><div class="dd">${fmtDate(k)}<small>${wd(k)}</small></div>
+      <div class="ds"><b>${fmt(tt.k)} ${t('kcal')}</b> · ${t('P')} ${fmt(tt.p)} · ${t('F')} ${fmt(tt.f)} · ${t('C')} ${fmt(tt.c)}</div></div>
+      <button class="x" data-act="deld" data-d="${k}" aria-label="${t('del_day')}">×</button></div>`;}).join('');
+  const n=keys.length,avg=n?scale(keys.reduce((a,k)=>addT(a,dayTotal(state.days[k])),Z()),1/n):null;
+  return `<section class="card"><h2>${t('all_days')}</h2>
+    <p class="hint">${n?t('days_stat',{n,k:fmt(avg.k),p:fmt(avg.p),f:fmt(avg.f),c:fmt(avg.c),P:t('P'),F:t('F'),C:t('C')}):t('days_empty')}</p>
+    <div class="daylist">${rows}</div>
+    <div class="actions"><button class="btn solid" data-act="today">${t('open_today')}</button><button class="btn" data-act="newday">${t('other_date')}</button></div>
+    <div id="newdaybox" style="display:none;margin-top:10px"><input type="date" id="newdate" value="${state.date}" aria-label="${t('date')}"><button class="btn wide" data-act="opennew">${t('open_day')}</button></div>
+  </section>`;
+}
+function potHTML(){
+  const p=state.pot;
+  return `<section class="card">
+    <h2>${t('pot_h')}</h2>
+    <p class="hint">${t('pot_hint')}</p>
+    <div style="margin-top:8px">${p.rows.map((r,i)=>rowHTML('pot','',i,r)).join('')||`<p class="empty">${t('pot_empty')}</p>`}</div>
+    <div class="actions">
+      <button class="btn" data-act="add" data-scope="pot">${t('add_ingr')}</button>
+      <button class="btn ghost" data-act="pottpl">${t('pot_example')}</button>
+      <button class="btn ghost" data-act="clear" data-scope="pot">${t('clear')}</button>
+    </div>
+    <div class="potin">
+      <label>${t('tare')}<input type="text" inputmode="decimal" data-act="tare" value="${p.tare||''}" placeholder="0"></label>
+      <label>${t('gross')}<input type="text" inputmode="decimal" data-act="gross" value="${p.gross||''}"></label>
+      <label>${t('portion')}<input type="text" inputmode="decimal" data-act="portion" value="${p.portion||''}"></label>
+      <label>${t('add_to')}<select data-act="potto">${allMeals(cur()).map(m=>`<option value="${m.id}"${p.to===m.id?' selected':''}>${esc(mealName(m))}</option>`).join('')}</select></label>
+    </div>
+    <div class="out" id="potout"></div>
+    <button class="btn solid wide" data-act="potadd">${t('pot_add',{d:fmtDate(state.date)})}</button>
+  </section>
+  <section class="card help"><h3>${t('noweigh_h')}</h3>
+    <p>${t('noweigh_p')}</p></section>`;
+}
+function potOut(){
+  const p=state.pot,tt=sum(p.rows),net=Math.max(0,(+p.gross||0)-(+p.tare||0));
+  let h=`<div>${t('pot_whole')} ${macroLine(tt)}</div>`;
+  if(!net) return h+`<p class="hint">${t('pot_enter')}</p>`;
+  const per=scale(tt,100/net),por=scale(tt,(+p.portion||0)/net);
+  h+=`<div style="margin-top:6px">${t('pot_ready',{n:fmt(net)})} ${macroLine(per)}</div>`;
+  h+=`<div class="big">${t('pot_portion',{n:fmt(p.portion||0),k:fmt(por.k)})}</div><div>${macroLine(por,false)}</div>`;
+  return h;
+}
+function prodHTML(){
+  const rows=groups().map(g=>`<tr class="grp"><td colspan="5">${esc(GNAME(g))}</td></tr>`+allP().filter(x=>x.g===g).map(x=>
+    `<tr><td>${esc(N(x.n))}${x.mine?` <button class="x sm" data-act="delmine" data-id="${x.id}" aria-label="${t('del_food')}">×</button>`:''}</td><td>${fmt(x.k)}</td><td>${fmt(x.p,1)}</td><td>${fmt(x.f,1)}</td><td>${fmt(x.c,1)}</td></tr>`).join('')).join('');
+  const g=t('g');
+  return `<section class="card">
+    <h2>${t('my_food_h')}</h2>
+    <p class="hint">${t('my_food_hint')}</p>
+    <div class="potin">
+      <label style="grid-column:1/-1">${t('name')}<input id="mn" placeholder="${t('name_ph')}"></label>
+      <label>${t('kcal_l')}<input id="mk" type="text" inputmode="decimal"></label>
+      <label>${t('protein')}, ${g}<input id="mp" type="text" inputmode="decimal"></label>
+      <label>${t('fat')}, ${g}<input id="mf" type="text" inputmode="decimal"></label>
+      <label>${t('carbs')}, ${g}<input id="mc" type="text" inputmode="decimal"></label>
+    </div>
+    <button class="btn solid wide" data-act="addmine">${t('add_my')}</button>
+    <p class="hint" id="mmsg"></p>
+  </section>
+  <section class="card"><h2>${t('table_h')}</h2>
+    <div class="tbl"><table><thead><tr><th>${t('food')}</th><th>${t('kcal_l')}</th><th>${t('P')}</th><th>${t('F')}</th><th>${t('C')}</th></tr></thead><tbody>${rows}</tbody></table></div>
+  </section>`;
+}
+function helpHTML(){
+  const rows=!hasGoal()?`<tr><td colspan="3">${t('guide_none')}</td></tr>`:MEALS.map(m=>{const g=mealGuide(m);return `<tr><td>${m.drink?t('snack_drink'):t('m_'+m.id)}</td><td>≈ ${fmt(g.k)}</td><td>${g.prot}</td></tr>`;}).join('');
+  return HELP_T[L()].replace('@@GUIDE@@',rows).replace(/@@(\w+)@@/g,(m,k)=>t(k));
+}
+function goalUI(){
+  syncC();const tg=T(),left=tg.k-tg.p*4-tg.f*9;
+  const gc=$('#gc'),n=$('#gnote');
+  $('#h1').textContent=t('title');document.title=t('title');$('#foot').textContent=t('foot');
+  for(const [id,k] of [['gl-k','goal_k'],['gl-p','goal_p'],['gl-f','goal_f'],['gl-c','goal_c']])$('#'+id).firstChild.textContent=t(k);
+  $('#gk').placeholder=t('eg')+' 2000';$('#gp').placeholder=t('eg')+' 110';$('#gf').placeholder=t('eg')+' 70';
+  $('[data-act="goalreset"]').textContent=t('goal_clear');$('#calcsum').textContent=t('calc_open');
+  if(!$('#calcbody').dataset.lang||$('#calcbody').dataset.lang!==L()){$('#calcbody').dataset.lang=L();renderCalc(true);}
+  document.querySelectorAll('.tab').forEach(b=>b.textContent=t('tab_'+b.dataset.view));
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l===L()));
+  document.documentElement.lang=L();
+  if(!hasGoal()){
+    $('#sub').textContent=t('goal_none');
+    $('#goalsum').textContent=t('goal_set');if(!goalAutoOpened){goalAutoOpened=true;$('#goal').open=true;}
+    if(gc)gc.value='';
+    n.textContent=t('goal_none_note');n.classList.remove('o');
+    return;
+  }
+  $('#goalsum').textContent=t('goal_change');
+  $('#sub').textContent=t('goal_line',{k:fmt(tg.k),p:fmt(tg.p),f:fmt(tg.f),c:fmt(tg.c),ck:fmt(tg.c*4)});
+  if(gc)gc.value=`${fmt(tg.c*4)} ${t('kcal')} ≈ ${fmt(tg.c)} ${t('g')}`;
+  n.textContent=left>=0?t('goal_calc',{k:fmt(tg.k),p:fmt(tg.p),f:fmt(tg.f),left:fmt(left)}):t('goal_over',{n:fmt(tg.p*4+tg.f*9)});
+  n.classList.toggle('o',left<0);
+}
+function bmr(c){
+  const w=pf(c.w),h=pf(c.h),a=pf(c.a),f=c.sex==='f';
+  if(!(w>0&&h>0&&a>0))return null;
+  const hb=f?655.1+9.6*w+1.85*h-4.68*a:66.47+13.75*w+5.0*h-6.74*a;
+  const msj=9.99*w+6.25*h-4.92*a+(f?-161:5);
+  const hb2=f?447.6+9.2*w+3.1*h-4.3*a:88.36+13.4*w+4.8*h-5.68*a;
+  const avg=(hb+msj+hb2)/3;
+  return {hb,msj,hb2,avg,tdee:avg*pf(c.act||1.2)};
+}
+function calcHTML(){
+  const c=state.calc,r=bmr(c);
+  const acts=[['1.2','act1'],['1.375','act2'],['1.55','act3'],['1.725','act4'],['1.9','act5']];
+  let res=`<p class="hint">${t('calc_fill')}</p>`;
+  if(r)res=`<div class="cres">
+    <div class="cl"><span>${t('f_hb')}</span><span>${fmt(r.hb)} ${t('kcal')}</span></div>
+    <div class="cl"><span>${t('f_msj')}</span><span>${fmt(r.msj)} ${t('kcal')}</span></div>
+    <div class="cl"><span>${t('f_hb2')}</span><span>${fmt(r.hb2)} ${t('kcal')}</span></div>
+    <div class="cl cavg"><span>${t('calc_avg')} (${t('calc_bmr')})</span><span>${fmt(r.avg)} ${t('kcal')}</span></div>
+    <div class="ctd">${t('calc_tdee')}: ${fmt(r10(r.tdee))} ${t('kcal')}</div>
+    <p class="hint">${t('calc_note')}</p>
+    <div class="seg" style="grid-template-columns:repeat(3,1fr);margin-top:8px">${[[1,'calc_maint'],[0.9,'−10%'],[0.8,'−20%']].map(([m,l])=>`<button data-act="cdef" data-m="${m}" class="${(state.calc.def||1)==m?'on':''}">${l.startsWith('calc')?t(l):l}<br><small>${fmt(r10(r.tdee*m))}</small></button>`).join('')}</div>
+    ${(()=>{const c=state.calc,W=pf(c.w),k=r10(r.tdee*(c.def||1));
+      const pkAuto={'1.2':0.8,'1.375':1.2,'1.55':1.4,'1.725':1.6,'1.9':2}[c.act]||1.2;
+      const pk=c.pk||pkAuto,fk=c.fk||1;
+      const P=Math.round(W*pk),F=Math.round(W*fk),C=Math.max(0,Math.round((k-P*4-F*9)/4));
+      return `<div class="sl"><div class="slh"><b>${t('calc_prot')}</b><span id="pkval">${pk.toFixed(1).replace(".",L()==="en"?".":",")} → ${P} ${t('g')}</span></div>
+        <input type="range" min="0.8" max="2" step="0.1" value="${pk}" data-act="cpk" aria-label="${t('calc_prot')}">
+        <div class="scale"><span>0,8<br><small>${t('pk08')}</small></span><span>1,2–1,6<br><small>${t('pk12')}</small></span><span>2,0<br><small>${t('pk20')}</small></span></div></div>
+      <div class="sl"><div class="slh"><b>${t('calc_fat')}</b><span id="fkval">${fk.toFixed(1).replace(".",L()==="en"?".":",")} → ${F} ${t('g')}</span></div>
+        <input type="range" min="0.6" max="2" step="0.1" value="${fk}" data-act="cfk" aria-label="${t('calc_fat')}">
+        <div class="scale"><span>0,6–0,8<br><small>${t('fk07')}</small></span><span>1,0<br><small>${t('fk10')}</small></span><span>2,0<br><small>${t('fk20')}</small></span></div></div>
+      <p class="hint">${t('calc_fat_hint')} ${t('omega')}</p>
+      <div class="ctd" id="macros" style="font-size:15px">${t('calc_macros',{p:P,f:F,c:C,ck:fmt(C*4)})}</div>
+      <button class="btn solid wide" data-act="calcapply" data-k="${k}" data-p="${P}" data-f="${F}">${t('calc_apply2',{k:fmt(k),p:P,f:F})}</button>`;})()}</div>`;
+  return `<div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:4px"><span class="hint">${t('how_calc')}</span><button class="qbtn${state.calcHelp?' on':''}" data-act="calchelp" type="button" aria-label="${t('how_calc')}" aria-expanded="${!!state.calcHelp}">?</button></div>
+    <div class="calchelp${state.calcHelp?' on':''}" id="calchelp">${CALC_HELP[L()]}</div>
+    <div class="seg" style="grid-template-columns:1fr 1fr"><button data-act="csex" data-v="f" class="${c.sex==='f'?'on':''}">${t('calc_f')}</button><button data-act="csex" data-v="m" class="${c.sex!=='f'?'on':''}">${t('calc_m')}</button></div>
+    <div class="potin">
+      <label>${t('calc_w')}<input type="text" inputmode="decimal" data-act="calc" data-k="w" value="${esc(c.w)}"></label>
+      <label>${t('calc_h')}<input type="text" inputmode="decimal" data-act="calc" data-k="h" value="${esc(c.h)}"></label>
+      <label>${t('calc_a')}<input type="text" inputmode="decimal" data-act="calc" data-k="a" value="${esc(c.a)}"></label>
+      <label>${t('calc_act')}<select data-act="cact">${acts.map(([v,k])=>`<option value="${v}"${c.act===v?' selected':''}>${t(k)}</option>`).join('')}</select></label>
+    </div><div id="cres">${res}</div>`;
+}
+function macroLive(){
+  const c=state.calc,r=bmr(c);if(!r)return;const W=pf(c.w),k=r10(r.tdee*(c.def||1));
+  const pkAuto={'1.2':0.8,'1.375':1.2,'1.55':1.4,'1.725':1.6,'1.9':2}[c.act]||1.2;const pk=c.pk||pkAuto,fk=c.fk||1;
+  const P=Math.round(W*pk),F=Math.round(W*fk),C=Math.max(0,Math.round((k-P*4-F*9)/4));
+  const pv=$('#pkval'),fv=$('#fkval'),m=$('#macros'),b=$('[data-act="calcapply"]');
+  if(pv)pv.textContent=`${pk.toFixed(1).replace(".",L()==="en"?".":",")} → ${P} ${t('g')}`;if(fv)fv.textContent=`${fk.toFixed(1).replace(".",L()==="en"?".":",")} → ${F} ${t('g')}`;
+  if(m)m.textContent=t('calc_macros',{p:P,f:F,c:C,ck:fmt(C*4)});
+  if(b){b.dataset.k=k;b.dataset.p=P;b.dataset.f=F;b.textContent=t('calc_apply2',{k:fmt(k),p:P,f:F});}
+}
+function renderCalc(full){
+  if(full){$('#calcbody').innerHTML=calcHTML();return;}
+  const c=state.calc,r=bmr(c);const cr=$('#cres');if(!cr)return;
+  cr.innerHTML=calcHTML().split('<div id="cres">')[1].replace(/<\/div>$/,'');
+}
+function fillGoalInputs(){for(const k of ['k','p','f']){const el=$('#g'+k);if(el&&document.activeElement!==el)el.value=T()[k]||'';}}
+function bar(label,val,target,unit,color,extra=''){
+  target=target||0;const diff=val-target,over=target>0&&diff>target*0.05;
+  const txt=diff<0?t('still',{n:fmt(-diff),u:unit}):t('over',{n:fmt(diff),u:unit});
+  return `<div class="bar"><div class="bl"><b>${label}</b><span>${fmt(val)} / ${fmt(target)}</span></div>
+    <div class="track"><div class="fill" style="width:${target>0?Math.min(val/target*100,100):0}%;background:${over?'var(--over)':color}"></div></div>
+    <div class="rem${over?' o':''}">${txt}${extra}</div></div>`;
+}
+function updateTotals(){
+  syncC();let day=Z();const d=peek(state.date);
+  for(const m of allMeals(d)){
+    const tt=sum(mealRowsOf(d,m.id));day=addT(day,tt);
+    const el=document.querySelector(`[data-role="mt-${m.id}"]`);
+    if(el) el.innerHTML=`<b>${fmt(tt.k)} ${t('kcal')}</b>${t('P')} ${fmt(tt.p)}  ${t('F')} ${fmt(tt.f)}  ${t('C')} ${fmt(tt.c)}`;
+  }
+  $('#bars').innerHTML=!hasGoal()?`<div class="nogoal">${t('nogoal_bar',{k:`<b>${fmt(day.k)}</b>`,p:fmt(day.p),f:fmt(day.f),c:fmt(day.c),P:t('P'),F:t('F'),C:t('C')})}<span>${t('nogoal_bar2')}</span></div>`:
+    bar(t('calories'),day.k,T().k,t('kcal'),'var(--k)')+
+    bar(t('protein'),day.p,T().p,t('g'),'var(--p)')+
+    bar(t('fat'),day.f,T().f,t('g'),'var(--f)')+
+    bar(t('carbs'),day.c,T().c,t('g'),'var(--c)',t('of_kcal',{a:fmt(day.c*4),b:fmt(T().c*4)}));
+  goalUI();
+  const po=$('#potout');if(po) po.innerHTML=potOut();
+}
+function refreshHints(){
+  document.querySelectorAll('.meal').forEach(sec=>{const m=allMeals(cur()).find(x=>x.id===sec.dataset.meal);const h=sec.querySelector('header .hint');if(m&&h)h.textContent=mealHint(m);else if(m&&mealHint(m)){const hd=sec.querySelector('header h2');if(hd)hd.insertAdjacentHTML('afterend',`<p class="hint">${mealHint(m)}</p>`);}});
+  if(state.view==='help')$('#view').innerHTML=helpHTML();
+}
+function render(){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.view===state.view));
+  const v=$('#view');
+  if(state.view==='pot') v.innerHTML=potHTML();
+  else if(state.view==='prod') v.innerHTML=prodHTML();
+  else if(state.view==='help') v.innerHTML=helpHTML();
+  else if(state.view==='days') v.innerHTML=daysHTML();
+  else v.innerHTML=dayHTML();
+  updateTotals();
+}
+let picker=null,goalAutoOpened=false;
+const norm=x=>String(x).toLowerCase().replace(/[’'ʼ`]/g,'').replace(/ё/g,'е');
+function openPicker(pk){
+  picker=pk;let el=$('#sheet');
+  if(!el){el=document.createElement('div');el.id='sheet';el.className='sheet';document.body.appendChild(el);}
+  el.innerHTML=`<div class="panel" role="dialog" aria-label="${t('choose_food')}"><div class="ph"><input id="psearch" type="search" placeholder="${t('search_ph')}" autocomplete="off" autocapitalize="off"><button class="x" data-act="pclose" aria-label="${t('close')}">×</button></div><div class="plist" id="plist"></div></div>`;
+  el.style.display='flex';renderPList('');
+  setTimeout(()=>{const i=$('#psearch');if(i)i.focus();},60);
+}
+function renderPList(q){
+  q=norm(q).trim();const curId=picker&&picker.mode==='set'?(listOf({dataset:picker})[picker.i]||{}).pid:null;
+  const match=x=>!q||(Array.isArray(x.n)?x.n:[x.n]).some(v=>norm(v).includes(q));
+  const items=allP().filter(match);
+  const html=groups().map(g=>{const xs=items.filter(x=>x.g===g);if(!xs.length)return '';
+    return `<div class="pg">${esc(GNAME(g))}</div>`+xs.map(x=>`<button class="pi${x.id===curId?' on':''}" data-act="pchoose" data-id="${x.id}" type="button"><span>${esc(N(x.n))}</span><small>${fmt(x.k)} ${t('kcal')}</small></button>`).join('');}).join('');
+  $('#plist').innerHTML=html||`<p class="pempty">${t('nothing_found')}</p>`;
+}
+function closePicker(){picker=null;const el=$('#sheet');if(el)el.style.display='none';}
+function choose(id){
+  if(!picker)return;const pk=picker;closePicker();
+  if(pk.mode==='set'){const rows=listOf({dataset:pk});const r=rows[pk.i];if(r){delete r.custom;r.pid=id;}}
+  else{const rows=pk.scope==='pot'?state.pot.rows:cur().meals[pk.meal];rows.push({pid:id,g:100});}
+  save();render();
+}
+function goTo(iso){if(!isISO(iso))return;state.date=iso;state.view='day';save();render();try{window.scrollTo({top:0});}catch(e){}}
+
+document.addEventListener('input',e=>{
+  const el=e.target,act=el.dataset&&el.dataset.act;if(!act&&el.id!=='psearch')return;
+  if(act==='g'){const r=getRow(el);r.g=Math.max(0,pf(el.value));el.closest('.row').querySelector('[data-role="rm"]').innerHTML=macroLine(scaled(r));}
+  else if(act==='tare'||act==='gross'||act==='portion'){state.pot[act]=Math.max(0,pf(el.value));}
+  else if(el.id==='psearch'){renderPList(el.value);return;}
+  else if(act==='calc'){state.calc[el.dataset.k]=el.value;save();renderCalc(false);return;}
+  else if(act==='cpk'){state.calc.pk=pf(el.value);save();macroLive();return;}
+  else if(act==='cfk'){state.calc.fk=pf(el.value);save();macroLive();return;}
+  else if(act==='goal'){state.target[el.dataset.k]=Math.max(0,pf(el.value));save();updateTotals();refreshHints();return;}
+  else return;
+  save();updateTotals();
+});
+document.addEventListener('change',e=>{
+  const el=e.target,act=el.dataset&&el.dataset.act;if(!act)return;
+  if(act==='tpl'){if(!el.value)return;cur().meals[el.dataset.meal]=tplRows(el.value);save();render();return;}
+  else if(act==='potto'){state.pot.to=el.value;}
+  else if(act==='cact'){state.calc.act=el.value;state.calc.pk=null;save();renderCalc(false);return;}
+  else if(act==='date'){goTo(el.value);return;}
+  else return;
+  save();updateTotals();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&picker){closePicker();return;}if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('dayrow'))e.target.click();});
+document.addEventListener('click',e=>{
+  if(e.target.id==='sheet'){closePicker();return;}
+  const tab=e.target.closest('.tab');
+  if(tab){state.view=tab.dataset.view;save();render();return;}
+  const el=e.target.closest('[data-act]');if(!el||el.tagName==='SELECT'||el.tagName==='INPUT')return;
+  const act=el.dataset.act;let scrollTo=null;
+  if(act==='add'){openPicker({mode:'add',scope:el.dataset.scope||'meal',meal:el.dataset.meal||''});return;}
+  else if(act==='pick'){const r=el.closest('.row');openPicker({mode:'set',scope:r.dataset.scope,meal:r.dataset.meal,i:+r.dataset.i});return;}
+  else if(act==='pchoose'){choose(el.dataset.id);return;}
+  else if(act==='pclose'){closePicker();return;}
+  else if(act==='del'){const r=el.closest('.row');listOf(r).splice(+r.dataset.i,1);}
+  else if(act==='clear'){if(el.dataset.scope==='pot')state.pot.rows=[];else cur().meals[el.dataset.meal]=[];}
+  else if(act==='addmeal'){const n=(prompt(t('meal_name_q'),t('meal_default'))||'').trim();if(!n)return;const id='x'+Date.now();const d=cur();d.extra.push({id,name:n});d.meals[id]=[];scrollTo=id;}
+  else if(act==='renmeal'){const d=cur(),e=d.extra.find(x=>x.id===el.dataset.meal);if(!e)return;const n=(prompt(t('meal_name_q'),e.name)||'').trim();if(!n)return;e.name=n;}
+  else if(act==='delmeal'){const d=cur(),e=d.extra.find(x=>x.id===el.dataset.meal);if(!e)return;if(mealRowsOf(d,e.id).length&&!confirm(t('confirm_del_meal',{n:e.name})))return;d.extra=d.extra.filter(x=>x.id!==e.id);delete d.meals[e.id];}
+  else if(act==='pottpl'){state.pot.rows=potDefault();state.pot.tare=0;state.pot.gross=1310;}
+  else if(act==='potadd'){
+    const p=state.pot,net=Math.max(0,(+p.gross||0)-(+p.tare||0));
+    if(!net||!p.rows.length||!p.portion){const o=$('#potout');if(o)o.insertAdjacentHTML('beforeend',`<p class="warn">${t('pot_warn')}</p>`);return;}
+    const tt=scale(sum(p.rows),100/net);
+    if(!cur().meals[p.to])p.to='dinner';cur().meals[p.to].push({custom:{pot:true,n:'Страва з каструлі',k:tt.k,p:tt.p,f:tt.f,c:tt.c},g:+p.portion});
+    state.view='day';scrollTo=p.to;
+  }
+  else if(act==='addmine'){
+    const n=$('#mn').value.trim(),num=id=>pf($(id).value);
+    let k=num('#mk');const pp=num('#mp'),ff=num('#mf'),cc=num('#mc');
+    if(!n){$('#mmsg').textContent=t('err_name');return;}
+    if(!k)k=pp*4+ff*9+cc*4;
+    if(!k){$('#mmsg').textContent=t('err_vals');return;}
+    state.mine.push({id:'u'+Date.now(),g:'mine',n,k,p:pp,f:ff,c:cc,mine:true});
+  }
+  else if(act==='delmine'){
+    const id=el.dataset.id,pr=byId(id);if(!pr)return;
+    const conv=rows=>rows.forEach(r=>{if(r.pid===id){r.custom={n:N(pr.n),k:pr.k,p:pr.p,f:pr.f,c:pr.c};delete r.pid;}});
+    Object.values(state.days).forEach(d=>Object.values(d.meals).forEach(conv));conv(state.pot.rows);
+    state.mine=state.mine.filter(x=>x.id!==id);
+  }
+  else if(act==='goalreset'){state.target={...DEFAULT_TARGET};}
+  else if(act==='calchelp'){state.calcHelp=!state.calcHelp;el.classList.toggle('on',state.calcHelp);el.setAttribute('aria-expanded',String(!!state.calcHelp));$('#calchelp').classList.toggle('on',state.calcHelp);return;}
+  else if(act==='cdef'){state.calc.def=pf(el.dataset.m);save();renderCalc(false);return;}
+  else if(act==='csex'){state.calc.sex=el.dataset.v;save();renderCalc(true);return;}
+  else if(act==='calcapply'){state.target.k=pf(el.dataset.k);state.target.p=pf(el.dataset.p);state.target.f=pf(el.dataset.f);$('#calc').open=false;}
+  else if(act==='lang'){state.lang=el.dataset.l;}
+  else if(act==='dprev'){goTo(shiftISO(state.date,-1));return;}
+  else if(act==='dnext'){goTo(shiftISO(state.date,1));return;}
+  else if(act==='today'){goTo(todayISO());return;}
+  else if(act==='open'){goTo(el.dataset.d);return;}
+  else if(act==='newday'){const b=$('#newdaybox');b.style.display=b.style.display==='none'?'block':'none';return;}
+  else if(act==='opennew'){goTo($('#newdate').value);return;}
+  else if(act==='deld'){e.stopPropagation();const k=el.dataset.d;if(!confirm(t('confirm_del_day',{d:fmtDate(k)})))return;delete state.days[k];}
+  else if(act==='cleardaybtn'){if(!confirm(t('confirm_clear_day',{d:fmtDate(state.date)})))return;delete state.days[state.date];}
+  else if(act==='exp'){$('#dataio').value=JSON.stringify(state);$('#datamsg').textContent=t('exp_msg');return;}
+  else if(act==='copy'){const ta=$('#dataio');if(!ta.value)ta.value=JSON.stringify(state);ta.select();
+    const done=()=>{$('#datamsg').textContent=t('copied');};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(ta.value).then(done,()=>{document.execCommand&&document.execCommand('copy');done();});
+    else{document.execCommand&&document.execCommand('copy');done();}
+    return;}
+  else if(act==='imp'){
+    let d;try{d=JSON.parse($('#dataio').value);}catch(e){$('#datamsg').textContent=t('imp_err');return;}
+    if(!d||typeof d!=='object'||!d.target){$('#datamsg').textContent=t('imp_bad');return;}
+    if(!confirm(t('imp_confirm')))return;
+    state=merge(d);save();render();fillGoalInputs();$('#datamsg').textContent=t('imp_ok');return;}
+  else return;
+  save();render();fillGoalInputs();
+  if(scrollTo){const s=document.querySelector(`.meal[data-meal="${scrollTo}"]`);if(s&&s.scrollIntoView)s.scrollIntoView({block:"start"});}
+});
+render();fillGoalInputs();
+</script>
+</body>
+</html>
