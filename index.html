@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#fbf4f6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#140910" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -44,7 +44,12 @@
   --cardb:1px solid #4a3040;--btnb:1px solid #4a3040;--rule:1px solid #4a3040;
 }
 *{box-sizing:border-box}
-html,body{margin:0}
+html,body{margin:0;overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
+html{touch-action:pan-y}
+body{touch-action:pan-y manipulation}
+.wrap{overflow-x:clip}
+.tbl,.plist{touch-action:pan-x pan-y}
+input[type=range]{touch-action:pan-y}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-text-size-adjust:100%}
 .wrap{max-width:720px;margin:0 auto;padding:18px 14px 60px}
 h1{font-family:var(--display);font-size:var(--h1s,24px);font-weight:var(--h1w,700);margin:0;letter-spacing:var(--h1ls,-.01em);line-height:1.15;text-transform:var(--h1tt,none)}
@@ -163,11 +168,12 @@ input[type=range]{width:100%;padding:0;margin:8px 0 2px;background:transparent;b
 .lang button{font:inherit;font-size:11px;font-weight:700;letter-spacing:.06em;padding:4px 7px;border:var(--btnb);background:var(--card);color:var(--ink);border-radius:var(--rs);cursor:pointer}
 .lang button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
 .pick{font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:var(--fieldb);border-radius:var(--rs);padding:8px 10px;width:100%;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:none;align-items:flex-end;justify-content:center}
-.panel{background:var(--card);color:var(--ink);width:100%;max-width:720px;max-height:88vh;border-radius:var(--rl) var(--rl) 0 0;display:flex;flex-direction:column;box-shadow:0 -6px 30px rgba(0,0,0,.25)}
-.ph{display:flex;gap:6px;padding:12px 12px 8px;border-bottom:1px solid var(--line)}
-.ph input{flex:1}
-.plist{overflow:auto;padding:4px 12px 20px;-webkit-overflow-scrolling:touch}
+.sheet{position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.45);z-index:50;display:none;justify-content:center;align-items:stretch}
+.panel{background:var(--card);color:var(--ink);width:100%;max-width:720px;height:100%;display:flex;flex-direction:column;box-shadow:0 0 30px rgba(0,0,0,.25);overflow:hidden}
+.ph{display:flex;gap:6px;padding:8px 12px calc(8px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--card);flex-shrink:0}
+.ph input{flex:1;font-size:16px}
+.plist{flex:1;min-height:0;overflow:auto;padding:4px 12px 8px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+body.noscroll{overflow:hidden;position:fixed;width:100%}
 .pg{font-family:var(--display);font-weight:var(--h2w,700);font-size:14px;color:var(--accent);padding:12px 0 4px}
 .pi{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;font:inherit;font-size:15px;color:var(--ink);background:transparent;border:0;border-top:1px solid var(--line);padding:10px 2px;cursor:pointer;text-align:left}
 .pi small{color:var(--muted);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -426,7 +432,7 @@ function rowHTML(scope,meal,i,r){
   const name=r.custom?`<div class="custom-name">${esc(info(r).n)}<small>${fmt(r.custom.k)} ${t('kcal100')}</small></div>`
     :`<button class="pick" data-act="pick" type="button">${esc(N(info(r).n))}</button>`;
   return `<div class="row" data-scope="${scope}" data-meal="${meal}" data-i="${i}">${name}
-    <label class="g"><input type="text" inputmode="decimal" value="${r.g}" data-act="g" aria-label="${t('grams')}"><span>${t('g')}</span></label>
+    <label class="g"><input type="text" inputmode="decimal" value="${r.g===''||r.g==null?'':r.g}" placeholder="0" data-act="g" aria-label="${t('grams')}"><span>${t('g')}</span></label>
     <button class="x" data-act="del" aria-label="${t('delete')}">×</button>
     <div class="rm" data-role="rm">${macroLine(scaled(r))}</div></div>`;
 }
@@ -649,10 +655,15 @@ const norm=x=>String(x).toLowerCase().replace(/[’'ʼ`]/g,'').replace(/ё/g,'е
 function openPicker(pk){
   picker=pk;let el=$('#sheet');
   if(!el){el=document.createElement('div');el.id='sheet';el.className='sheet';document.body.appendChild(el);}
-  el.innerHTML=`<div class="panel" role="dialog" aria-label="${t('choose_food')}"><div class="ph"><input id="psearch" type="search" placeholder="${t('search_ph')}" autocomplete="off" autocapitalize="off"><button class="x" data-act="pclose" aria-label="${t('close')}">×</button></div><div class="plist" id="plist"></div></div>`;
-  el.style.display='flex';renderPList('');
-  setTimeout(()=>{const i=$('#psearch');if(i)i.focus();},60);
+  el.innerHTML=`<div class="panel" role="dialog" aria-label="${t('choose_food')}"><div class="plist" id="plist"></div><div class="ph"><input id="psearch" type="search" placeholder="${t('search_ph')}" autocomplete="off" autocapitalize="off" enterkeyhint="done"><button class="x" data-act="pclose" aria-label="${t('close')}">×</button></div></div>`;
+  lockedY=window.scrollY||0;document.body.classList.add('noscroll');document.body.style.top=(-lockedY)+'px';
+  el.style.display='flex';fitSheet();renderPList('');
+  const vv=window.visualViewport;if(vv){vv.addEventListener('resize',fitSheet);vv.addEventListener('scroll',fitSheet);}
+  setTimeout(()=>{const i=$('#psearch');if(i)i.focus({preventScroll:true});},60);
 }
+let lockedY=0;
+function fitSheet(){const el=$('#sheet');if(!el||el.style.display==='none')return;const vv=window.visualViewport;
+  el.style.height=(vv?vv.height:window.innerHeight)+'px';el.style.top=(vv?vv.offsetTop:0)+'px';}
 function renderPList(q){
   q=norm(q).trim();const curId=picker&&picker.mode==='set'?(listOf({dataset:picker})[picker.i]||{}).pid:null;
   const match=x=>!q||(Array.isArray(x.n)?x.n:[x.n]).some(v=>norm(v).includes(q));
@@ -661,18 +672,21 @@ function renderPList(q){
     return `<div class="pg">${esc(GNAME(g))}</div>`+xs.map(x=>`<button class="pi${x.id===curId?' on':''}" data-act="pchoose" data-id="${x.id}" type="button"><span>${esc(N(x.n))}</span><small>${fmt(x.k)} ${t('kcal')}</small></button>`).join('');}).join('');
   $('#plist').innerHTML=html||`<p class="pempty">${t('nothing_found')}</p>`;
 }
-function closePicker(){picker=null;const el=$('#sheet');if(el)el.style.display='none';}
+function closePicker(){picker=null;const el=$('#sheet');if(el)el.style.display='none';
+  const vv=window.visualViewport;if(vv){vv.removeEventListener('resize',fitSheet);vv.removeEventListener('scroll',fitSheet);}
+  if(document.body.classList.contains('noscroll')){document.body.classList.remove('noscroll');document.body.style.top='';try{window.scrollTo(0,lockedY);}catch(e){}}}
 function choose(id){
   if(!picker)return;const pk=picker;closePicker();
   if(pk.mode==='set'){const rows=listOf({dataset:pk});const r=rows[pk.i];if(r){delete r.custom;r.pid=id;}}
-  else{const rows=pk.scope==='pot'?state.pot.rows:cur().meals[pk.meal];rows.push({pid:id,g:100});}
+  else{const rows=pk.scope==='pot'?state.pot.rows:cur().meals[pk.meal];rows.push({pid:id,g:''});}
   save();render();
+  if(pk.mode!=='set'){const rows=document.querySelectorAll(`.row[data-scope="${pk.scope}"][data-meal="${pk.meal||''}"]`);const last=rows[rows.length-1];const inp=last&&last.querySelector('input[data-act="g"]');if(inp){inp.focus();if(inp.scrollIntoView)inp.scrollIntoView({block:'center'});}}
 }
 function goTo(iso){if(!isISO(iso))return;state.date=iso;state.view='day';save();render();try{window.scrollTo({top:0});}catch(e){}}
 
 document.addEventListener('input',e=>{
   const el=e.target,act=el.dataset&&el.dataset.act;if(!act&&el.id!=='psearch')return;
-  if(act==='g'){const r=getRow(el);r.g=Math.max(0,pf(el.value));el.closest('.row').querySelector('[data-role="rm"]').innerHTML=macroLine(scaled(r));}
+  if(act==='g'){const r=getRow(el);r.g=el.value.trim()===''?'':Math.max(0,pf(el.value));el.closest('.row').querySelector('[data-role="rm"]').innerHTML=macroLine(scaled(r));}
   else if(act==='tare'||act==='gross'||act==='portion'){state.pot[act]=Math.max(0,pf(el.value));}
   else if(el.id==='psearch'){renderPList(el.value);return;}
   else if(act==='calc'){state.calc[el.dataset.k]=el.value;save();renderCalc(false);return;}
