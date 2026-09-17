@@ -1,5 +1,5 @@
 import { LANGS, detectLang, getLang, setLang, t, N, GNAME, GROUPS, HELP_T, CALC_HELP } from './i18n.js';
-import { PRODUCTS, TPL, MEALS, r10, mealGuide, mealHint } from './data.js';
+import { PRODUCTS, MEALS, r10, mealGuide, mealHint } from './data.js';
 
 const DEFAULT_TARGET={k:0,p:0,f:0,c:0};
 const hasGoal=()=>T().k>0;
@@ -12,7 +12,6 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
 const Z=()=>({k:0,p:0,f:0,c:0});
 const fmt=(n,d=0)=>(+n||0).toLocaleString(t('locale'),{maximumFractionDigits:d});
-const tplRows=id=>TPL.find(t=>t.id===id).items.map(([pid,g])=>({pid,g}));
 const potDefault=()=>[{pid:'sushi',g:200},{pid:'chk_mince',g:500},{pid:'cabbage',g:400},{pid:'veg_oil',g:15},{pid:'sesame_oil',g:10},{pid:'soy',g:30},{pid:'gochu',g:20},{pid:'chili_oil',g:10}];
 const pad=n=>String(n).padStart(2,'0');
 const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;};
@@ -75,9 +74,6 @@ function macroLine(m,withK=true){
 function productOptions(sel){
   return groups().map(g=>`<optgroup label="${esc(GNAME(g))}">`+allP().filter(x=>x.g===g).map(x=>`<option value="${x.id}"${x.id===sel?' selected':''}>${esc(N(x.n))}</option>`).join('')+'</optgroup>').join('');
 }
-function tplOptions(){
-  return [...new Set(TPL.map(x=>x.grp[0]))].map(g=>`<optgroup label="${esc(N(TPL.find(x=>x.grp[0]===g).grp))}">`+TPL.filter(x=>x.grp[0]===g).map(x=>`<option value="${x.id}">${esc(N(x.n))}</option>`).join('')+'</optgroup>').join('');
-}
 function rowHTML(scope,meal,i,r){
   const name=r.custom?`<div class="custom-name">${esc(info(r).n)}<small>${fmt(r.custom.k)} ${t('kcal100')}</small></div>`
     :`<button class="pick" data-act="pick" type="button">${esc(N(info(r).n))}</button>`;
@@ -94,7 +90,6 @@ function mealHTML(m){
     <div>${rows.map((r,i)=>rowHTML('meal',m.id,i,r)).join('')}</div>
     <div class="actions">
       <button class="btn" data-act="add" data-meal="${m.id}">${t('add_food')}</button>
-      <select class="tpl" data-act="tpl" data-meal="${m.id}" aria-label="${t('template')}"><option value="">${t('pick_tpl')}</option>${tplOptions()}</select>
       ${rows.length?`<button class="btn ghost" data-act="clear" data-meal="${m.id}">${t('clear')}</button>`:''}
       ${m.custom?`<button class="btn ghost" data-act="delmeal" data-meal="${m.id}">${t('del_meal')}</button>`:''}
     </div></section>`;
@@ -166,6 +161,7 @@ function prodHTML(){
     <p class="hint">${t('my_food_hint')}</p>
     <div class="potin">
       <label style="grid-column:1/-1">${t('name')}<input id="mn" placeholder="${t('name_ph')}"></label>
+      <label style="grid-column:1/-1">${t('food_type')}<select id="mg">${groupOptions('g0')}</select></label>
       <label>${t('kcal_l')}<input id="mk" type="text" inputmode="decimal"></label>
       <label>${t('protein')}, ${g}<input id="mp" type="text" inputmode="decimal"></label>
       <label>${t('fat')}, ${g}<input id="mf" type="text" inputmode="decimal"></label>
@@ -325,18 +321,23 @@ function renderPList(q){
   const addBtn=`<button class="btn wide" data-act="qnew" type="button" style="margin:12px 0 4px">${q?t('add_new_q',{q:esc(($('#psearch')||{}).value||'').trim()}):t('add_new')}</button>`;
   $('#plist').innerHTML=(html||`<p class="pempty">${t('nothing_found')}</p>`)+addBtn;
 }
-function addMine(n,k,pp,ff,cc){
+function groupOptions(sel){
+  return Object.keys(GROUPS).filter(g=>g!=='mine').map(g=>`<option value="${g}"${g===sel?' selected':''}>${esc(GNAME(g))}</option>`).join('');
+}
+function addMine(n,k,pp,ff,cc,grp){
   n=String(n||'').trim();k=pf(k);pp=pf(pp);ff=pf(ff);cc=pf(cc);
+  grp=grp||'mine';
   if(!n)return {err:t('err_name')};
   if(!k)k=pp*4+ff*9+cc*4;
   if(!k)return {err:t('err_vals')};
-  const id='u'+Date.now();state.mine.push({id,g:'mine',n,k,p:pp,f:ff,c:cc,mine:true});save();return {id};
+  const id='u'+Date.now();state.mine.push({id,g:grp,n,k,p:pp,f:ff,c:cc,mine:true});save();return {id};
 }
 function showNewForm(q){
   const g=t('g');
   $('#plist').innerHTML=`<div class="pg">${t('my_food_h')}</div><p class="hint">${t('my_food_hint')}</p>
     <div class="potin">
       <label style="grid-column:1/-1">${t('name')}<input id="qn" value="${esc(q)}" placeholder="${t('name_ph')}"></label>
+      <label style="grid-column:1/-1">${t('food_type')}<select id="qg">${groupOptions('g0')}</select></label>
       <label>${t('kcal_l')}<input id="qk" type="text" inputmode="decimal"></label>
       <label>${t('protein')}, ${g}<input id="qp" type="text" inputmode="decimal"></label>
       <label>${t('fat')}, ${g}<input id="qf" type="text" inputmode="decimal"></label>
@@ -372,8 +373,7 @@ document.addEventListener('input',e=>{
 });
 document.addEventListener('change',e=>{
   const el=e.target,act=el.dataset&&el.dataset.act;if(!act)return;
-  if(act==='tpl'){if(!el.value)return;cur().meals[el.dataset.meal]=tplRows(el.value);save();render();return;}
-  else if(act==='potto'){state.pot.to=el.value;}
+  if(act==='potto'){state.pot.to=el.value;}
   else if(act==='cact'){state.calc.act=el.value;state.calc.pk=null;save();renderCalc(false);return;}
   else if(act==='date'){goTo(el.value);return;}
   else return;
@@ -404,13 +404,13 @@ document.addEventListener('click',e=>{
     state.view='day';scrollTo=p.to;
   }
   else if(act==='addmine'){
-    const r=addMine($('#mn').value,$('#mk').value,$('#mp').value,$('#mf').value,$('#mc').value);
+    const r=addMine($('#mn').value,$('#mk').value,$('#mp').value,$('#mf').value,$('#mc').value,$('#mg').value);
     if(r.err){$('#mmsg').textContent=r.err;return;}
   }
   else if(act==='qnew'){showNewForm(($('#psearch')||{}).value||'');return;}
   else if(act==='qback'){renderPList(($('#psearch')||{}).value||'');return;}
   else if(act==='qsave'){
-    const r=addMine($('#qn').value,$('#qk').value,$('#qp').value,$('#qf').value,$('#qc').value);
+    const r=addMine($('#qn').value,$('#qk').value,$('#qp').value,$('#qf').value,$('#qc').value,$('#qg').value);
     if(r.err){$('#qmsg').textContent=r.err;return;}
     choose(r.id);return;
   }

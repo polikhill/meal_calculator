@@ -76,7 +76,6 @@ select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid 
 .btn.solid{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
 .btn.ghost{background:transparent;border-color:var(--line);color:var(--muted);box-shadow:none}
 .btn.wide{width:100%;margin-top:10px}
-.tpl{width:auto;flex:1;min-width:150px;font-size:14px}
 .empty{color:var(--muted);font-size:13px;margin:8px 0 2px}
 .drinksel{min-width:120px}
 .drink{margin-top:12px;padding:12px;border-radius:var(--rm);background:var(--accent-soft)}
