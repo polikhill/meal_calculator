@@ -139,9 +139,7 @@ function potHTML(){
     </div>
     <div class="out" id="potout"></div>
     <button class="btn solid wide" data-act="potadd">${t('pot_add',{d:fmtDate(state.date)})}</button>
-  </section>
-  <section class="card help"><h3>${t('noweigh_h')}</h3>
-    <p>${t('noweigh_p')}</p></section>`;
+  </section>`;
 }
 function potOut(){
   const p=state.pot,tt=sum(p.rows),net=Math.max(0,(+p.gross||0)-(+p.tare||0));
@@ -434,6 +432,7 @@ document.addEventListener('click',e=>{
   else if(act==='opennew'){goTo($('#newdate').value);return;}
   else if(act==='deld'){e.stopPropagation();const k=el.dataset.d;if(!confirm(t('confirm_del_day',{d:fmtDate(k)})))return;delete state.days[k];}
   else if(act==='cleardaybtn'){if(!confirm(t('confirm_clear_day',{d:fmtDate(state.date)})))return;delete state.days[state.date];}
+  else if(act==='hardreload'){location.reload(true);return;}
   else if(act==='exp'){$('#dataio').value=JSON.stringify(state);$('#datamsg').textContent=t('exp_msg');return;}
   else if(act==='copy'){const ta=$('#dataio');if(!ta.value)ta.value=JSON.stringify(state);ta.select();
     const done=()=>{$('#datamsg').textContent=t('copied');};
